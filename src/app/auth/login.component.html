@@ -1,13 +1,16 @@
-<mat-card>
-    <h2>Login</h2>
-    <mat-form-field appearance="fill">
+<div class="login-container">
+  <mat-card class="login-card">
+    <h2 class="login-title">Employee Login</h2>
+    <mat-form-field class="full-width" appearance="outline">
       <mat-label>Username</mat-label>
-      <input matInput [(ngModel)]="username">
+      <input matInput [(ngModel)]="username" placeholder="Enter your username">
     </mat-form-field>
-    <mat-form-field appearance="fill">
+
+    <mat-form-field class="full-width" appearance="outline">
       <mat-label>Password</mat-label>
-      <input matInput type="password" [(ngModel)]="password">
+      <input matInput type="password" [(ngModel)]="password" placeholder="Enter your password">
     </mat-form-field>
-    <button mat-raised-button color="primary" (click)="login()">Login</button>
+
+    <button mat-raised-button color="primary" class="login-button" (click)="login()">Login</button>
   </mat-card>
-  
+</div>

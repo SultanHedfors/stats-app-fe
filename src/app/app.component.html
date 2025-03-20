@@ -4,5 +4,5 @@
     <a routerLink="/login" *ngIf="!authService.isLoggedIn()">Login</a>
     <button (click)="logout()" *ngIf="authService.isLoggedIn()">Logout</button>
   </nav>
-  
+  <app-navbar></app-navbar>
   <router-outlet></router-outlet>

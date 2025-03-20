@@ -9,8 +9,8 @@ import { AuthGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent }, // 👈 Default route = Login screen
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'work-stats', component: WorkStatsListComponent, canActivate: [AuthGuard]  },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'procedures', component: ProceduresListComponent, canActivate: [AuthGuard]  },
   { path: '**', redirectTo: '' } // 👈 Redirect unknown routes to login
 ];

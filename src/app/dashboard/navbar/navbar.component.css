@@ -1,0 +1,33 @@
+.navbar {
+    background: #2C3E50;
+    padding: 10px 20px;
+  }
+  
+  .navbar ul {
+    list-style: none;
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+    padding: 0;
+  }
+  
+  .navbar li {
+    display: inline;
+  }
+  
+  .navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    font-weight: bold;
+  }
+  
+  .navbar a:hover {
+    background: #1ABC9C;
+    border-radius: 5px;
+  }
+  
+  .logout {
+    margin-left: auto;
+  }
+  

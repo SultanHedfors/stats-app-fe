@@ -1,0 +1,9 @@
+<nav class="navbar">
+    <ul>
+      <li *ngIf="isLoggedIn()"><a routerLink="/work-stats">📊 Work Stats</a></li>
+      <li *ngIf="isLoggedIn() && (userRole === 'ADMIN' || userRole === 'REASSIGN_ALLOWED')">
+        <a routerLink="/procedures-list">📝 Procedures List</a>
+      </li>
+      <li *ngIf="isLoggedIn()" class="logout"><a (click)="logout()">🚪 Logout</a></li>
+    </ul>
+  </nav>

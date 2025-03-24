@@ -2,3 +2,12 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Reduce table row height and font globally */
+:root {
+    --mat-table-row-item-container-height: 28px;
+    --mat-table-row-item-label-text-size: 12px;
+    --mat-table-row-item-label-text-line-height: 16px;
+    --mat-table-row-item-label-text-tracking: 0;
+  }
+  

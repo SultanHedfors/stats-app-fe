@@ -22,10 +22,14 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   login() {
-    if (this.authService.login(this.username, this.password)) {
-      this.router.navigate(['/work-stats']); // Redirect to stats after login
-    } else {
-      this.errorMessage = 'Invalid credentials. Please try again.';
-    }
+    this.authService.login(this.username, this.password).subscribe({
+      next: () => {
+        // Already handled by tap in service
+      },
+      error: (err) => {
+        console.error('Login failed', err);
+        alert('Login failed!');
+      }
+    });
   }
 }

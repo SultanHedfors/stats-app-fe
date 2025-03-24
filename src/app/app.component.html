@@ -1,8 +1,9 @@
-<nav>
+<!-- <nav>
     <a routerLink="/work-stats" *ngIf="authService.isLoggedIn()">Work Stats</a>
     <a routerLink="/procedures-list" *ngIf="authService.isLoggedIn()">Procedures List</a>
     <a routerLink="/login" *ngIf="!authService.isLoggedIn()">Login</a>
     <button (click)="logout()" *ngIf="authService.isLoggedIn()">Logout</button>
-  </nav>
-  <app-navbar></app-navbar>
+  </nav> -->
+  
+  <app-navbar *ngIf="authService.isLoggedIn()"></app-navbar>
   <router-outlet></router-outlet>

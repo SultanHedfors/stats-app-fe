@@ -1,33 +1,37 @@
 .navbar {
-    background: #2C3E50;
-    padding: 10px 20px;
-  }
-  
-  .navbar ul {
-    list-style: none;
-    display: flex;
-    justify-content: flex-start;
-    gap: 15px;
-    padding: 0;
-  }
-  
-  .navbar li {
-    display: inline;
-  }
-  
-  .navbar a {
-    color: white;
-    text-decoration: none;
-    padding: 10px;
-    font-weight: bold;
-  }
-  
-  .navbar a:hover {
-    background: #1ABC9C;
-    border-radius: 5px;
-  }
-  
-  .logout {
-    margin-left: auto;
-  }
-  
+  background: #2C3E50;
+  padding: 10px 20px; /* większy padding dla wysokości */
+  font-size: 16px;
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 0;
+  margin: 0;
+  align-items: center;
+}
+
+.navbar li {
+  display: inline;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  padding: 10px 14px;
+  font-weight: bold;
+  font-size: 15px;
+  transition: background 0.3s ease;
+}
+
+.navbar a:hover {
+  background: #1ABC9C;
+  border-radius: 6px;
+}
+
+.logout {
+  margin-left: auto;
+}

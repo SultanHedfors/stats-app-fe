@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { LoginComponent } from './auth/login.component';
 
 import { AuthService } from './auth/auth.service';
-import { DashboardComponent } from './dashboard/dash/dashboard.component';
+
 import { ProceduresListComponent } from './dashboard/procedures-list/procedures-list.component';
 
 import { AppComponent } from './app.component';
@@ -40,7 +40,6 @@ import { WorkStatsListComponent } from './dashboard/work-stats/work-stats-list.c
     MatFormFieldModule,
     MatListModule,
     LoginComponent,
-    DashboardComponent,
     WorkStatsListComponent,
     ProceduresListComponent
   ],

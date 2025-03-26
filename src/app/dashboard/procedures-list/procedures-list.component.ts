@@ -25,13 +25,21 @@ import { ProcedureService } from './procedure.service'; // dopasuj do swojej śc
 })
 export class ProceduresListComponent implements OnInit {
   assigningStatus: Record<number, 'idle' | 'loading' | 'success' | 'error'> = {};
+  highlightedRows: Record<number, boolean> = {};
+
 
   procedures: any[] = [];
-  displayedColumns: string[] = ['activityId', 'activityDate', 'activityTime', 'actions'];
+  displayedColumns: string[] = [  'activityId',
+    'activityDateTime', // zamiast activityDate i activityTime
+    'employeeCode',
+    'employeeFullName',
+    'procedureName',
+    'procedureType',
+    'actions'];
   loading = false;
 
   page = 0;
-  size = 20;
+  size = 30;
   totalPages = 0;
   visiblePageWindow = 5;
 
@@ -47,10 +55,10 @@ export class ProceduresListComponent implements OnInit {
 
     this.loading = true;
     this.procedureService.getPage(pageNumber, this.size).subscribe({
-      next: data => {
-        this.procedures = data;
+      next: response => {
+        this.procedures = response.content;
         this.page = pageNumber;
-        this.totalPages = Math.ceil(3999428 / this.size); // lub dynamicznie jeśli masz dostęp
+        this.totalPages = response.totalPages;
         this.loading = false;
       },
       error: err => {
@@ -58,6 +66,7 @@ export class ProceduresListComponent implements OnInit {
         this.loading = false;
       }
     });
+    
   }
 
   pages(): (number | string)[] {
@@ -104,9 +113,17 @@ export class ProceduresListComponent implements OnInit {
     this.assigningStatus[activityId] = 'loading';
   
     this.procedureService.assignToCurrentUser(activityId).subscribe({
-      next: () => {
+      next: (updated: any) => {
         this.assigningStatus[activityId] = 'success';
-        setTimeout(() => this.refreshCurrentPage(), 1000); // Refresh after short delay
+  
+        const item = this.procedures.find(p => p.activityId === activityId);
+        if (item) {
+          item.assignedToLoggedUser = true;
+          item.hasHistory = true;
+          item.employeeCode = updated.employeeCode;
+          item.employeeFullName = updated.employeeFullName;
+          this.flashHighlight(activityId);
+        }
       },
       error: err => {
         this.assigningStatus[activityId] = 'error';
@@ -115,9 +132,37 @@ export class ProceduresListComponent implements OnInit {
     });
   }
   
+  
+  
   refreshCurrentPage() {
     this.procedureService.clearCache();
     this.loadPage(this.page);
   }
+  restorePreviousAssignment(activityId: number) {
+    this.procedureService.restorePreviousAssignment(activityId).subscribe({
+      next: (updated: any) => {
+        const item = this.procedures.find(p => p.activityId === activityId);
+        if (item) {
+          item.assignedToLoggedUser = false;
+          item.hasHistory = false;
+          item.employeeCode = updated.employeeCode;
+          item.employeeFullName = updated.employeeFullName;
+          this.assigningStatus[activityId] = 'idle';
+          this.flashHighlight(activityId);
+        }
+      },
+      error: err => {
+        console.error('Błąd przywracania przypisania:', err);
+      }
+    });
+  }
+  
+  flashHighlight(activityId: number) {
+    this.highlightedRows[activityId] = true;
+    setTimeout(() => {
+      this.highlightedRows[activityId] = false;
+    }, 1500);
+  }
+  
   
 }

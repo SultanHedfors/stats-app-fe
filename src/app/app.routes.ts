@@ -4,12 +4,21 @@ import { ProceduresListComponent } from './dashboard/procedures-list/procedures-
 import { WorkStatsListComponent } from './dashboard/work-stats/work-stats-list.component';
 import { AuthGuard } from './auth/auth.guard';
 
-
-
 export const routes: Routes = [
-  { path: '', component: LoginComponent }, // 👈 Default route = Login screen
-  { path: 'work-stats', component: WorkStatsListComponent, canActivate: [AuthGuard]  },
-  // { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  { path: 'procedures-list', component: ProceduresListComponent, canActivate: [AuthGuard]  },
-  { path: '**', redirectTo: '' } // 👈 Redirect unknown routes to login
+  { path: '', component: LoginComponent }, // Ekran logowania
+
+  // Główne zakładki (widoczne po zalogowaniu)
+  {
+    path: 'work-stats',
+    component: WorkStatsListComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'procedures-list',
+    component: ProceduresListComponent,
+    canActivate: [AuthGuard]
+  },
+
+  // Nieznana ścieżka → przekierowanie do login
+  { path: '**', redirectTo: '' }
 ];

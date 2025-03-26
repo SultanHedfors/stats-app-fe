@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { CommonModule } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
 
 
 @Component({
@@ -9,7 +10,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   templateUrl: 'navbar.component.html',
   styleUrls: ['navbar.component.css'],
-  imports: [CommonModule,RouterLink]
+  imports: [CommonModule,RouterLink,MatIcon,RouterModule]
 })
 export class NavbarComponent {
   constructor(private authService: AuthService, private router: Router) {}

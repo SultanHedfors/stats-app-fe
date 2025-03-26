@@ -1,78 +1,203 @@
+/* Ogólne */
+
+body {
+  background-color: #f2f4f7;
+  font-family: 'Roboto', sans-serif;
+}
+
+.content-wrapper {
+  padding: 0 30px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Lato', 'Roboto', sans-serif;
+  font-weight: 600;
+  font-size: 30px;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.header-icon {
+  font-size: 28px;
+  color: #1abc9c;
+}
+
+/* Spinner */
+
 .spinner-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 60vh; /* centers vertically */
-  }
-  
-  mat-spinner {
-    width: 40px !important;
-    height: 40px !important;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
 
-  .pagination-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 15px 0;
-    gap: 4px;
-    flex-wrap: wrap;
-    font-size: 0.8rem;
-  }
-  
-  .page-btn {
-    font-size: 0.75rem;
-    min-width: 28px;
-    height: 28px;
-    padding: 0 6px;
-  }
-  
-  .ellipsis {
-    font-size: 0.8rem;
-    padding: 0 6px;
-    color: #888;
-  }
+mat-spinner {
+  width: 40px !important;
+  height: 40px !important;
+}
 
-  .pagination-spinner {
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 16px;
-  }
+.global-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+}
 
-  .global-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.6); /* jaśniejsze wyszarzenie */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    backdrop-filter: blur(3px); /* opcjonalne rozmycie tła */
-  }
-  
-  .page-btn.active-page {
-    background-color: #1abc9c;
-    color: white;
-    border-radius: 50%;
-    min-width: 36px;
-    height: 36px;
-    padding: 0;
-    font-weight: bold;
-    transition: background-color 0.3s;
-  }
-  
-  .page-btn:not(.active-page):hover {
-    background-color: #eee;
-  }
+/* Tabela */
 
-  .refresh-container {
-    display: flex;
-    justify-content: flex-start; /* ustawienie po lewej stronie */
-    margin-bottom: 12px;
+.custom-table {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  width: 100%;
+}
+
+.custom-table th,
+.custom-table td {
+  font-size: 14px;
+  color: #2c3e50;
+  padding: 10px 12px;
+}
+
+.custom-table tr:hover {
+  background-color: #f0f9f8;
+}
+
+tr td {
+  transition: background-color 0.5s ease, opacity 0.5s ease;
+}
+
+.highlight-flash {
+  animation: fade-salmon 2s ease-in-out forwards;
+}
+
+@keyframes fade-salmon {
+  0% {
+    background-color: transparent;
+    opacity: 1;
   }
-  
-  
-  
+  20%,
+  80% {
+    background-color: #ffa07a;
+    opacity: 1;
+  }
+  100% {
+    background-color: transparent;
+    opacity: 0;
+  }
+}
+
+/* Akcje */
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.action-buttons button[mat-icon-button] {
+  width: 36px;
+  height: 36px;
+}
+
+.action-buttons button mat-icon {
+  font-size: 20px;
+}
+
+button.assign {
+  color: #1abc9c;
+}
+
+button.assigned {
+  color: #2ecc71;
+}
+
+button.restore {
+  color: #e67e22;
+}
+
+button.error {
+  color: #e74c3c;
+}
+
+/* Paginacja */
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0;
+  gap: 4px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+}
+
+.page-btn {
+  font-size: 0.75rem;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+}
+
+.page-btn.active-page {
+  background-color: #1abc9c;
+  color: white;
+  border-radius: 50%;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.page-btn:not(.active-page):hover {
+  background-color: #eee;
+}
+
+.ellipsis {
+  font-size: 0.8rem;
+  padding: 0 6px;
+  color: #888;
+}
+
+.refresh-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
+.error-icon {
+  color: #e53935;
+}
+
+::ng-deep .custom-table thead tr {
+  background-color: #f8f9fa !important;
+}
+
+::ng-deep .custom-table th {
+  font-weight: 600;
+  color: #2c3e50 !important;
+  font-size: 14px;
+}
+
+button[mat-icon-button][disabled] {
+  opacity: 0.4;
+  cursor: not-allowed !important;
+}
+
+
+
+

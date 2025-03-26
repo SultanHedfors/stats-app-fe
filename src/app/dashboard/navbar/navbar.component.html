@@ -1,13 +1,32 @@
 <nav class="navbar">
   <ul>
     <li *ngIf="isLoggedIn()">
-      <a [routerLink]="['/work-stats']" routerLinkActive="active">📊 Work Stats</a>
+      <a
+        [routerLink]="['/work-stats']"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <mat-icon class="nav-icon">bar_chart</mat-icon>
+        Statystyki pracy
+      </a>
     </li>
+
     <li *ngIf="isLoggedIn() && (userRole === 'ADMIN' || userRole === 'REASSIGN_ALLOWED')">
-      <a [routerLink]="['/procedures-list']" routerLinkActive="active">📝 Procedures List</a>
+      <a
+        [routerLink]="['/procedures-list']"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <mat-icon class="nav-icon">assignment</mat-icon>
+        Lista zabiegów
+      </a>
     </li>
+
     <li *ngIf="isLoggedIn()" class="logout">
-      <a (click)="logout()">🚪 Logout</a>
+      <a (click)="logout()" class="clickable">
+        <mat-icon class="nav-icon">logout</mat-icon>
+        Wyloguj
+      </a>
     </li>
   </ul>
 </nav>

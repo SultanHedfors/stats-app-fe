@@ -1,0 +1,55 @@
+.calendar-container {
+    width: 100%;
+    max-width: 260px;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 16px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  
+  .calendar-day {
+    padding: 6px;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+  }
+  
+  .calendar-day:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .calendar-day.today {
+    color: #1abc9c;
+    font-weight: bold;
+  }
+  
+  .calendar-day.selected {
+    background-color: #1abc9c;
+    color: white;
+  }
+  
+  /* 🛠️ Fix: when today is also selected */
+  .calendar-day.today.selected {
+    color: white !important;
+  }
+  
+  

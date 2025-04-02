@@ -22,13 +22,35 @@
     <td mat-cell *matCellDef="let element">{{ element.activityId }}</td>
   </ng-container>
 
+
+
   <!-- Date + Time Column -->
-  <ng-container matColumnDef="activityDateTime">
-    <th mat-header-cell *matHeaderCellDef>Data i godzina</th>
-    <td mat-cell *matCellDef="let element">
-      {{ element.activityDate | date:'yyyy-MM-dd' }} {{ element.activityTime | date:'HH:mm' }}
-    </td>
-  </ng-container>
+<!-- Date + Time Column -->
+<ng-container matColumnDef="activityDateTime">
+  <button mat-stroked-button color="primary" (click)="clearDateFilter()">Wyczyść filtr daty</button>
+  <th mat-header-cell *matHeaderCellDef>
+    <div class="header-with-calendar">
+      <span>Data i godzina</span>
+      <button mat-icon-button [matTooltip]="'Wybierz datę'" (click)="toggleCalendar()">
+        <mat-icon>calendar_today</mat-icon>
+      </button>
+    </div>
+    <div *ngIf="calendarOpenFor" class="calendar-popup" (click)="$event.stopPropagation()">
+      <app-mini-calendar
+      [selectedDate]="selectedDate"
+      (dateSelected)="onDateSelected($event)"
+      (closeCalendar)="calendarOpenFor = null">
+    </app-mini-calendar>
+    
+    </div>
+    
+  </th>
+
+  <td mat-cell *matCellDef="let element">
+    {{ element.activityDate | date:'yyyy-MM-dd' }} {{ element.activityTime | date:'HH:mm' }}
+  </td>
+</ng-container>
+
 
   <!-- Employee Code -->
   <ng-container matColumnDef="employeeCode">
@@ -131,13 +153,13 @@
 
   <ng-container *ngFor="let p of pages()">
     <button mat-button
-    *ngIf="p !== '...'; else ellipsis"
-    (click)="loadPage(castToNumber(p))"
-    [disabled]="loading"
-    [color]="p === page ? 'primary' : undefined"
-    class="page-btn"
-    [ngClass]="{ 'active-page': castToNumber(p) === page }">
-{{ castToNumber(p) + 1 }}
+            *ngIf="p !== '...'; else ellipsis"
+            (click)="goToPage(castToNumber(p))"
+            [disabled]="loading"
+            [color]="castToNumber(p) === page ? 'primary' : undefined"
+            class="page-btn"
+            [ngClass]="{ 'active-page': castToNumber(p) === page }">
+      {{ castToNumber(p) + 1 }}
     </button>
     <ng-template #ellipsis>
       <span class="ellipsis">...</span>
@@ -145,12 +167,8 @@
   </ng-container>
 
   <button mat-button (click)="nextPageRange()" [disabled]="page >= totalPages - 1">»</button>
+</div>
 
-<!-- Global overlay + spinner -->
-<div class="global-overlay" *ngIf="loading">
-  <mat-spinner diameter="50"></mat-spinner>
-</div>
-</div>
 
 </div>
 </div>

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { ProcedureService } from './procedure.service';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ProcedureService } from './procedure.service'; // dopasuj do swojej ścieżki
+import { MiniCalendarComponent } from '../calendar/mini-calendar.component';
 
 @Component({
   selector: 'app-procedures-list',
@@ -17,58 +17,136 @@ import { ProcedureService } from './procedure.service'; // dopasuj do swojej śc
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MiniCalendarComponent
   ],
   providers: [ProcedureService],
   templateUrl: './procedures-list.component.html',
   styleUrls: ['./procedures-list.component.css']
 })
 export class ProceduresListComponent implements OnInit {
-  assigningStatus: Record<number, 'idle' | 'loading' | 'success' | 'error'> = {};
-  highlightedRows: Record<number, boolean> = {};
-
-
   procedures: any[] = [];
-  displayedColumns: string[] = [  'activityId',
-    'activityDateTime', // zamiast activityDate i activityTime
-    'employeeCode',
-    'employeeFullName',
-    'procedureName',
-    'procedureType',
-    'actions'];
-  loading = false;
+  allProcedures: any[] = [];
+  highlightedRows: Record<number, boolean> = {};
+  assigningStatus: Record<number, 'idle' | 'loading' | 'success' | 'error'> = {};
 
+  selectedDate: Date | null = null;
+  calendarOpenFor: number | 'global' | null = null;
+  currentMonthKey = '';
+
+  loading = false;
   page = 0;
   size = 30;
   totalPages = 0;
   visiblePageWindow = 5;
 
+  displayedColumns: string[] = [
+    'activityId', 'activityDateTime', 'employeeCode',
+    'employeeFullName', 'procedureName', 'procedureType', 'actions'
+  ];
+
   constructor(private procedureService: ProcedureService) {}
 
   ngOnInit() {
-    const cacheExists = this.procedureService.isCachedRange(0, 4);
-    this.loadPage(0, !cacheExists);
+    const today = new Date();
+    const monthKey = this.procedureService.getMonthKey(today);
+    this.currentMonthKey = monthKey;
+    this.loading = true;
+
+    this.procedureService.prefetchSurroundingMonths(monthKey).subscribe(() => {
+      this.loadMonthData(monthKey);
+    });
   }
 
-  loadPage(pageNumber: number, forceLoad = true) {
-    const pageGroupStart = Math.floor(pageNumber / 5) * 5;
+  getMonthKey(date: Date): string {
+    return this.procedureService.getMonthKey(date);
+  }
 
-    this.loading = true;
-    this.procedureService.getPage(pageNumber, this.size).subscribe({
-      next: response => {
-        this.procedures = response.content;
-        this.page = pageNumber;
-        this.totalPages = response.totalPages;
-        this.loading = false;
+  loadMonthData(monthKey: string) {
+    this.allProcedures = this.procedureService.getProceduresByMonth(monthKey);
+    this.totalPages = this.getTotalPages();
+    this.page = 0;
+    this.updateDisplayedProcedures();
+    this.currentMonthKey = monthKey;
+    this.loading = false;
+  }
+
+  onDateSelected(date: Date) {
+    this.selectedDate = date;
+    const newMonthKey = this.getMonthKey(date);
+    this.calendarOpenFor = null;
+
+    if (newMonthKey !== this.currentMonthKey) {
+      this.loading = true;
+      this.procedureService.prefetchSurroundingMonths(newMonthKey).subscribe(() => {
+        this.loadMonthData(newMonthKey);
+        this.filterByDate(date);
+      });
+    } else {
+      this.filterByDate(date);
+    }
+  }
+
+  filterByDate(date: Date) {
+    const dateStr = date.toISOString().split('T')[0];
+    const filtered = this.allProcedures.filter(p =>
+      new Date(p.activityDate).toISOString().startsWith(dateStr)
+    );
+    this.procedures = filtered;
+    this.totalPages = 1;
+    this.page = 0;
+  }
+
+  clearDateFilter() {
+    this.selectedDate = null;
+    this.calendarOpenFor = null;
+    this.totalPages = this.getTotalPages();
+    this.page = 0;
+    this.updateDisplayedProcedures();
+  }
+
+  toggleCalendar() {
+    this.calendarOpenFor = this.calendarOpenFor ? null : 'global';
+  }
+
+  assignProcedure(activityId: number) {
+    this.assigningStatus[activityId] = 'loading';
+    this.procedureService.assignToCurrentUser(activityId).subscribe({
+      next: updated => {
+        const item = this.procedures.find(p => p.activityId === activityId);
+        if (item) {
+          Object.assign(item, updated, { assignedToLoggedUser: true, hasHistory: true });
+          this.flashHighlight(activityId);
+        }
+        this.assigningStatus[activityId] = 'success';
       },
       error: err => {
-        console.error('Error loading procedures:', err);
-        this.loading = false;
+        this.assigningStatus[activityId] = 'error';
+        console.error(err);
       }
     });
-    
   }
 
+  restorePreviousAssignment(activityId: number) {
+    this.procedureService.restorePreviousAssignment(activityId).subscribe({
+      next: updated => {
+        const item = this.procedures.find(p => p.activityId === activityId);
+        if (item) {
+          Object.assign(item, updated, { assignedToLoggedUser: false, hasHistory: false });
+          this.assigningStatus[activityId] = 'idle';
+          this.flashHighlight(activityId);
+        }
+      },
+      error: err => console.error(err)
+    });
+  }
+
+  flashHighlight(activityId: number) {
+    this.highlightedRows[activityId] = true;
+    setTimeout(() => this.highlightedRows[activityId] = false, 1500);
+  }
+
+  // Paginacja lokalna (tylko dla cache'owanej listy)
   pages(): (number | string)[] {
     const pages: (number | string)[] = [];
 
@@ -88,81 +166,36 @@ export class ProceduresListComponent implements OnInit {
     return pages;
   }
 
-  prevPageRange() {
-    if (this.page > 0) {
-      this.loadPage(this.page - 1);
-    }
-  }
-
-  nextPageRange() {
-    if (this.page < this.totalPages - 1) {
-      this.loadPage(this.page + 1);
-    }
-  }
-
   castToNumber(value: number | string): number {
     return typeof value === 'number' ? value : 0;
   }
 
-  refreshInitialPages() {
-    this.procedureService.clearCache(); // Wyczyść istniejący cache
-    this.loadPage(0); // Załaduj stronę 0 (spowoduje też załadowanie 0–4)
+  prevPageRange(): void {
+    if (this.page > 0) {
+      this.page--;
+      this.updateDisplayedProcedures();
+    }
   }
 
-  assignProcedure(activityId: number) {
-    this.assigningStatus[activityId] = 'loading';
-  
-    this.procedureService.assignToCurrentUser(activityId).subscribe({
-      next: (updated: any) => {
-        this.assigningStatus[activityId] = 'success';
-  
-        const item = this.procedures.find(p => p.activityId === activityId);
-        if (item) {
-          item.assignedToLoggedUser = true;
-          item.hasHistory = true;
-          item.employeeCode = updated.employeeCode;
-          item.employeeFullName = updated.employeeFullName;
-          this.flashHighlight(activityId);
-        }
-      },
-      error: err => {
-        this.assigningStatus[activityId] = 'error';
-        console.error('Błąd przypisania:', err);
-      }
-    });
+  nextPageRange(): void {
+    if (this.page < this.totalPages - 1) {
+      this.page++;
+      this.updateDisplayedProcedures();
+    }
   }
-  
-  
-  
-  refreshCurrentPage() {
-    this.procedureService.clearCache();
-    this.loadPage(this.page);
+
+  getTotalPages(): number {
+    return Math.ceil(this.allProcedures.length / this.size);
   }
-  restorePreviousAssignment(activityId: number) {
-    this.procedureService.restorePreviousAssignment(activityId).subscribe({
-      next: (updated: any) => {
-        const item = this.procedures.find(p => p.activityId === activityId);
-        if (item) {
-          item.assignedToLoggedUser = false;
-          item.hasHistory = false;
-          item.employeeCode = updated.employeeCode;
-          item.employeeFullName = updated.employeeFullName;
-          this.assigningStatus[activityId] = 'idle';
-          this.flashHighlight(activityId);
-        }
-      },
-      error: err => {
-        console.error('Błąd przywracania przypisania:', err);
-      }
-    });
+
+  updateDisplayedProcedures(): void {
+    const start = this.page * this.size;
+    const end = start + this.size;
+    this.procedures = this.allProcedures.slice(start, end);
   }
-  
-  flashHighlight(activityId: number) {
-    this.highlightedRows[activityId] = true;
-    setTimeout(() => {
-      this.highlightedRows[activityId] = false;
-    }, 1500);
+  goToPage(pageNumber: number): void {
+    this.page = pageNumber;
+    this.updateDisplayedProcedures();
   }
-  
   
 }

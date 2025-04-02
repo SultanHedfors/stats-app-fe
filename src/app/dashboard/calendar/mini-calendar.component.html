@@ -1,0 +1,31 @@
+<div class="calendar-container" (click)="$event.stopPropagation()">
+
+    <button mat-icon-button class="close-btn" (click)="closeCalendar.emit()">
+      <mat-icon>close</mat-icon>
+    </button>
+  
+    <div class="calendar-header">
+      <button mat-icon-button (click)="prevMonth()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <span>{{ getMonthName() }} {{ currentYear }}</span>
+      <button mat-icon-button (click)="nextMonth()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  
+    <div class="calendar-grid">
+        <div
+        *ngFor="let day of daysInMonth()"
+        class="calendar-day"
+        [ngClass]="{
+          today: isToday(day),
+          selected: isSelected(day)
+        }"
+        (click)="selectDay(day)"
+      >
+        {{ day }}
+        <span *ngIf="isToday(day)" class="today-label">(dziś)</span>
+      </div>
+    </div>
+  </div>

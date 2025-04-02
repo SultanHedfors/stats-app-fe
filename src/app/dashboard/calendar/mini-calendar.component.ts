@@ -27,8 +27,8 @@ export class MiniCalendarComponent implements OnChanges {
   }
 
   daysInMonth(): number[] {
-    const date = new Date(this.currentYear, this.currentMonth + 1, 0);
-    return Array.from({ length: date.getDate() }, (_, i) => i + 1);
+    const lastDay = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
+    return Array.from({ length: lastDay }, (_, i) => i + 1);
   }
 
   isToday(day: number): boolean {
@@ -40,18 +40,20 @@ export class MiniCalendarComponent implements OnChanges {
   }
 
   isSelected(day: number): boolean {
-    return !!this.selectedDate &&
+    return (
+      !!this.selectedDate &&
       day === this.selectedDate.getDate() &&
       this.currentMonth === this.selectedDate.getMonth() &&
-      this.currentYear === this.selectedDate.getFullYear();
+      this.currentYear === this.selectedDate.getFullYear()
+    );
   }
 
-  selectDay(day: number) {
-    const selectedDate = new Date(this.currentYear, this.currentMonth, day);
-    this.dateSelected.emit(selectedDate);
+  selectDay(day: number): void {
+    const selected = new Date(this.currentYear, this.currentMonth, day);
+    this.dateSelected.emit(selected);
   }
 
-  prevMonth() {
+  prevMonth(): void {
     if (this.currentMonth === 0) {
       this.currentMonth = 11;
       this.currentYear--;
@@ -60,7 +62,7 @@ export class MiniCalendarComponent implements OnChanges {
     }
   }
 
-  nextMonth() {
+  nextMonth(): void {
     if (this.currentMonth === 11) {
       this.currentMonth = 0;
       this.currentYear++;

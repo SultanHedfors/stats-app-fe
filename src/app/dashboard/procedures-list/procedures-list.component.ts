@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProcedureService } from './procedure.service';
+import { Procedure } from './procedure.model';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MiniCalendarComponent } from '../calendar/mini-calendar.component';
+import { ClickOutsideDirective } from '../calendar/click-outside.directive';
+
 
 @Component({
   selector: 'app-procedures-list',
@@ -18,20 +21,21 @@ import { MiniCalendarComponent } from '../calendar/mini-calendar.component';
     MatButtonModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    MiniCalendarComponent
+    MiniCalendarComponent,
+    ClickOutsideDirective // add our click-outside directive
   ],
-  providers: [ProcedureService],
   templateUrl: './procedures-list.component.html',
   styleUrls: ['./procedures-list.component.css']
 })
 export class ProceduresListComponent implements OnInit {
-  procedures: any[] = [];
-  allProcedures: any[] = [];
+  procedures: Procedure[] = [];
+  allProcedures: Procedure[] = [];
   highlightedRows: Record<number, boolean> = {};
   assigningStatus: Record<number, 'idle' | 'loading' | 'success' | 'error'> = {};
 
-  selectedDate: Date | null = null;
-  calendarOpenFor: number | 'global' | null = null;
+  // Set the selectedDate to today by default
+  selectedDate: Date | null = new Date();
+  calendarOpenFor: 'global' | null = null;
   currentMonthKey = '';
 
   loading = false;
@@ -41,20 +45,28 @@ export class ProceduresListComponent implements OnInit {
   visiblePageWindow = 5;
 
   displayedColumns: string[] = [
-    'activityId', 'activityDateTime', 'employeeCode',
-    'employeeFullName', 'procedureName', 'procedureType', 'actions'
+    'activityId',
+    'activityDateTime',
+    'employeeCode',
+    'employeeFullName',
+    'procedureName',
+    'procedureType',
+    'actions'
   ];
 
   constructor(private procedureService: ProcedureService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     const today = new Date();
+    // Set the date filter to today when the page is visited
+    this.selectedDate = today;
     const monthKey = this.procedureService.getMonthKey(today);
     this.currentMonthKey = monthKey;
     this.loading = true;
-
     this.procedureService.prefetchSurroundingMonths(monthKey).subscribe(() => {
       this.loadMonthData(monthKey);
+      // Immediately filter procedures by today's date
+      this.filterByDate(today);
     });
   }
 
@@ -62,7 +74,7 @@ export class ProceduresListComponent implements OnInit {
     return this.procedureService.getMonthKey(date);
   }
 
-  loadMonthData(monthKey: string) {
+  loadMonthData(monthKey: string): void {
     this.allProcedures = this.procedureService.getProceduresByMonth(monthKey);
     this.totalPages = this.getTotalPages();
     this.page = 0;
@@ -71,7 +83,7 @@ export class ProceduresListComponent implements OnInit {
     this.loading = false;
   }
 
-  onDateSelected(date: Date) {
+  onDateSelected(date: Date): void {
     this.selectedDate = date;
     const newMonthKey = this.getMonthKey(date);
     this.calendarOpenFor = null;
@@ -87,17 +99,26 @@ export class ProceduresListComponent implements OnInit {
     }
   }
 
-  filterByDate(date: Date) {
-    const dateStr = date.toISOString().split('T')[0];
-    const filtered = this.allProcedures.filter(p =>
-      new Date(p.activityDate).toISOString().startsWith(dateStr)
-    );
+  filterByDate(date: Date): void {
+    const selectedDateStr = this.formatLocalDate(date);
+    const filtered = this.allProcedures.filter(p => {
+      // Use substring to extract the date portion as sent from the backend
+      const recordDateStr = p.activityDate.substr(0, 10);
+      return recordDateStr === selectedDateStr;
+    });
     this.procedures = filtered;
     this.totalPages = 1;
     this.page = 0;
   }
+  private formatLocalDate(date: Date): string {
+    const yyyy = date.getFullYear();
+    const mm = ('0' + (date.getMonth() + 1)).slice(-2);
+    const dd = ('0' + date.getDate()).slice(-2);
+    return `${yyyy}-${mm}-${dd}`;
+  }
 
-  clearDateFilter() {
+  clearDateFilter(): void {
+    // UX-friendly removal: clear filter and show full month data
     this.selectedDate = null;
     this.calendarOpenFor = null;
     this.totalPages = this.getTotalPages();
@@ -105,11 +126,15 @@ export class ProceduresListComponent implements OnInit {
     this.updateDisplayedProcedures();
   }
 
-  toggleCalendar() {
+  toggleCalendar(event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+    }
     this.calendarOpenFor = this.calendarOpenFor ? null : 'global';
   }
+  
 
-  assignProcedure(activityId: number) {
+  assignProcedure(activityId: number): void {
     this.assigningStatus[activityId] = 'loading';
     this.procedureService.assignToCurrentUser(activityId).subscribe({
       next: updated => {
@@ -122,12 +147,12 @@ export class ProceduresListComponent implements OnInit {
       },
       error: err => {
         this.assigningStatus[activityId] = 'error';
-        console.error(err);
+        console.error('Assignment error:', err);
       }
     });
   }
 
-  restorePreviousAssignment(activityId: number) {
+  restorePreviousAssignment(activityId: number): void {
     this.procedureService.restorePreviousAssignment(activityId).subscribe({
       next: updated => {
         const item = this.procedures.find(p => p.activityId === activityId);
@@ -137,16 +162,16 @@ export class ProceduresListComponent implements OnInit {
           this.flashHighlight(activityId);
         }
       },
-      error: err => console.error(err)
+      error: err => console.error('Restore error:', err)
     });
   }
 
-  flashHighlight(activityId: number) {
+  flashHighlight(activityId: number): void {
     this.highlightedRows[activityId] = true;
-    setTimeout(() => this.highlightedRows[activityId] = false, 1500);
+    setTimeout(() => (this.highlightedRows[activityId] = false), 1500);
   }
 
-  // Paginacja lokalna (tylko dla cache'owanej listy)
+  // Local pagination methods
   pages(): (number | string)[] {
     const pages: (number | string)[] = [];
 
@@ -193,9 +218,9 @@ export class ProceduresListComponent implements OnInit {
     const end = start + this.size;
     this.procedures = this.allProcedures.slice(start, end);
   }
+
   goToPage(pageNumber: number): void {
     this.page = pageNumber;
     this.updateDisplayedProcedures();
   }
-  
 }

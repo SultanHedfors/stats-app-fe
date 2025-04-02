@@ -1,174 +1,145 @@
-<!-- Spinner wyświetlany tylko, gdy trwa ładowanie i nie ma danych -->
-
-
+<!-- Spinner when loading and no data available -->
 <div *ngIf="loading && procedures.length === 0" class="spinner-container">
   <mat-spinner diameter="40"></mat-spinner>
 </div>
+
 <div *ngIf="!loading || procedures.length > 0" class="content-wrapper">
-<!-- Lista zabiegów i tabela -->
-<div *ngIf="!loading || procedures.length > 0">
   <h2 class="section-header">
     <mat-icon class="header-icon">list_alt</mat-icon>
     Lista zabiegów
   </h2>
   
-  
   <table mat-table [dataSource]="procedures" class="mat-elevation-z8 custom-table">
+    <!-- Activity ID Column -->
+    <ng-container matColumnDef="activityId">
+      <th mat-header-cell *matHeaderCellDef>ID zabiegu</th>
+      <td mat-cell *matCellDef="let element">{{ element.activityId }}</td>
+    </ng-container>
 
-    <!-- ID Column -->
-  <!-- ID Column -->
-  <ng-container matColumnDef="activityId">
-    <th mat-header-cell *matHeaderCellDef>ID zabiegu</th>
-    <td mat-cell *matCellDef="let element">{{ element.activityId }}</td>
-  </ng-container>
-
-
-
-  <!-- Date + Time Column -->
-<!-- Date + Time Column -->
-<ng-container matColumnDef="activityDateTime">
-  <button mat-stroked-button color="primary" (click)="clearDateFilter()">Wyczyść filtr daty</button>
-  <th mat-header-cell *matHeaderCellDef>
-    <div class="header-with-calendar">
-      <span>Data i godzina</span>
-      <button mat-icon-button [matTooltip]="'Wybierz datę'" (click)="toggleCalendar()">
-        <mat-icon>calendar_today</mat-icon>
-      </button>
-    </div>
-    <div *ngIf="calendarOpenFor" class="calendar-popup" (click)="$event.stopPropagation()">
-      <app-mini-calendar
-      [selectedDate]="selectedDate"
-      (dateSelected)="onDateSelected($event)"
-      (closeCalendar)="calendarOpenFor = null">
-    </app-mini-calendar>
-    
-    </div>
-    
-  </th>
-
-  <td mat-cell *matCellDef="let element">
-    {{ element.activityDate | date:'yyyy-MM-dd' }} {{ element.activityTime | date:'HH:mm' }}
-  </td>
-</ng-container>
-
-
-  <!-- Employee Code -->
-  <ng-container matColumnDef="employeeCode">
-    <th mat-header-cell *matHeaderCellDef>Kod pracownika</th>
-    <td mat-cell *matCellDef="let element">{{ element.employeeCode }}</td>
-  </ng-container>
-
-  <!-- Employee Name -->
-  <ng-container matColumnDef="employeeFullName">
-    <th mat-header-cell *matHeaderCellDef>Imię i nazwisko</th>
-    <td mat-cell *matCellDef="let element">{{ element.employeeFullName }}</td>
-  </ng-container>
-
-  <!-- Procedure Name -->
-  <ng-container matColumnDef="procedureName">
-    <th mat-header-cell *matHeaderCellDef>Nazwa zabiegu</th>
-    <td mat-cell *matCellDef="let element">{{ element.procedureName }}</td>
-  </ng-container>
-
-  <!-- Procedure Type -->
-  <ng-container matColumnDef="procedureType">
-    <th mat-header-cell *matHeaderCellDef>Typ zabiegu</th>
-    <td mat-cell *matCellDef="let element">{{ element.procedureType }}</td>
-  </ng-container>
-
-    <!-- Action Column -->
-<!-- Action Column -->
-<ng-container matColumnDef="actions"> 
-  <th mat-header-cell *matHeaderCellDef>Akcje</th>
-  <td mat-cell *matCellDef="let element">
-    <div class="action-buttons">
-      <!-- Przypisane -->
-      <span *ngIf="element.assignedToLoggedUser">
-        <button mat-icon-button class="assigned" disabled matTooltip="Przypisane do mnie">
-          <mat-icon>verified_user</mat-icon>
-        </button>
-        <ng-container *ngIf="element.hasHistory; else restoreDisabled">
-          <button mat-icon-button class="restore" (click)="restorePreviousAssignment(element.activityId)" matTooltip="Przywróć poprzednie przypisanie użytkownika">
-            <mat-icon>restore</mat-icon>
+    <!-- Date + Time Column with Calendar integration -->
+    <ng-container matColumnDef="activityDateTime">
+      <th mat-header-cell *matHeaderCellDef>
+        <div class="header-with-calendar">
+          <span>Data i godzina</span>
+          <button mat-icon-button matTooltip="Wybierz datę" (click)="toggleCalendar($event)">
+            <mat-icon>calendar_today</mat-icon>
           </button>
-        </ng-container>
-        <ng-template #restoreDisabled>
-          <button mat-icon-button class="restore" disabled matTooltip="Brak poprzedniego przypisania użytkownika do zabiegu">
-            <mat-icon>restore</mat-icon>
+          
+          <!-- Show Clear Filter button only when a date filter is active -->
+          <button *ngIf="selectedDate" mat-stroked-button color="primary" (click)="clearDateFilter()">
+            Wyczyść filtr daty
           </button>
-        </ng-template>
-      </span>
-  
-      <!-- Do przypisania -->
-      <ng-container *ngIf="!element.assignedToLoggedUser">
-        <ng-container [ngSwitch]="assigningStatus[element.activityId] || 'idle'">
-          <button mat-icon-button disabled *ngSwitchCase="'loading'" matTooltip="Przypisywanie...">
-            <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
-          </button>
-  
-          <button mat-icon-button disabled class="assigned" *ngSwitchCase="'success'" matTooltip="Pomyślnie przypisano">
-            <mat-icon>check_circle</mat-icon>
-          </button>
-  
-          <button mat-icon-button disabled class="error" *ngSwitchCase="'error'" matTooltip="Wystąpił błąd podczas przypisywania">
-            <mat-icon>error</mat-icon>
-          </button>
-  
-          <span
-          [matTooltip]="
-            element.procedureScheduledOnEmployeesWorkingDay === true
-              ? 'Przypisz do mnie'
-              : 'Przypisanie niedostępne: zgodnie z grafikiem nie pracujesz w tym dniu.'
-          "
-        >
-          <button mat-icon-button class="assign"
-                  *ngSwitchCase="'idle'"
-                  [disabled]="element.procedureScheduledOnEmployeesWorkingDay !== true"
-                  (click)="assignProcedure(element.activityId)">
-            <mat-icon>person_add</mat-icon>
-          </button>
-        </span>
-        
-  
-  
-        </ng-container>
-      </ng-container>
-    </div>
-  </td>
-  
-</ng-container>
+        </div>
+        <div *ngIf="calendarOpenFor" class="calendar-popup" clickOutside (clickOutside)="calendarOpenFor = null">
+          <app-mini-calendar
+            [selectedDate]="selectedDate"
+            (dateSelected)="onDateSelected($event)"
+            (closeCalendar)="calendarOpenFor = null">
+          </app-mini-calendar>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <!-- Display date in UTC to avoid unwanted timezone shifts -->
+        {{ element.activityDate | date:'yyyy-MM-dd':'UTC' }} {{ element.activityTime }}
+      </td>
+    </ng-container>
 
+    <!-- Employee Code Column -->
+    <ng-container matColumnDef="employeeCode">
+      <th mat-header-cell *matHeaderCellDef>Kod pracownika</th>
+      <td mat-cell *matCellDef="let element">{{ element.employeeCode }}</td>
+    </ng-container>
+
+    <!-- Employee Full Name Column -->
+    <ng-container matColumnDef="employeeFullName">
+      <th mat-header-cell *matHeaderCellDef>Imię i nazwisko</th>
+      <td mat-cell *matCellDef="let element">{{ element.employeeFullName }}</td>
+    </ng-container>
+
+    <!-- Procedure Name Column -->
+    <ng-container matColumnDef="procedureName">
+      <th mat-header-cell *matHeaderCellDef>Nazwa zabiegu</th>
+      <td mat-cell *matCellDef="let element">{{ element.procedureName }}</td>
+    </ng-container>
+
+    <!-- Procedure Type Column -->
+    <ng-container matColumnDef="procedureType">
+      <th mat-header-cell *matHeaderCellDef>Typ zabiegu</th>
+      <td mat-cell *matCellDef="let element">{{ element.procedureType }}</td>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Akcje</th>
+      <td mat-cell *matCellDef="let element">
+        <div class="action-buttons">
+          <!-- Already Assigned -->
+          <ng-container *ngIf="element.assignedToLoggedUser; else assignBtn">
+            <button mat-icon-button class="assigned" disabled matTooltip="Przypisane do mnie">
+              <mat-icon>verified_user</mat-icon>
+            </button>
+            <ng-container *ngIf="element.hasHistory; else restoreDisabled">
+              <button mat-icon-button class="restore" (click)="restorePreviousAssignment(element.activityId)"
+                      matTooltip="Przywróć poprzednie przypisanie użytkownika">
+                <mat-icon>restore</mat-icon>
+              </button>
+            </ng-container>
+            <ng-template #restoreDisabled>
+              <button mat-icon-button class="restore" disabled
+                      matTooltip="Brak poprzedniego przypisania użytkownika do zabiegu">
+                <mat-icon>restore</mat-icon>
+              </button>
+            </ng-template>
+          </ng-container>
+
+          <!-- Not Assigned: Show assignment actions or status -->
+          <ng-template #assignBtn>
+            <ng-container [ngSwitch]="assigningStatus[element.activityId] || 'idle'">
+              <button mat-icon-button disabled *ngSwitchCase="'loading'" matTooltip="Przypisywanie...">
+                <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
+              </button>
+              <button mat-icon-button disabled class="assigned" *ngSwitchCase="'success'" matTooltip="Pomyślnie przypisano">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button mat-icon-button disabled class="error" *ngSwitchCase="'error'" matTooltip="Wystąpił błąd podczas przypisywania">
+                <mat-icon>error</mat-icon>
+              </button>
+              <span matTooltip="{{ element.procedureScheduledOnEmployeesWorkingDay ? 'Przypisz do mnie' : 'Przypisanie niedostępne: zgodnie z grafikiem nie pracujesz w tym dniu.' }}">
+                <button mat-icon-button class="assign"
+                        *ngSwitchCase="'idle'"
+                        [disabled]="!element.procedureScheduledOnEmployeesWorkingDay"
+                        (click)="assignProcedure(element.activityId)">
+                  <mat-icon>person_add</mat-icon>
+                </button>
+              </span>
+            </ng-container>
+          </ng-template>
+        </div>
+      </td>
+    </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row 
-    *matRowDef="let row; columns: displayedColumns;" 
-    [ngClass]="{ 'highlight-flash': highlightedRows[row.activityId] }">
-</tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+        [ngClass]="{ 'highlight-flash': highlightedRows[row.activityId] }">
+    </tr>
   </table>
 
-  <!-- Paginacja -->
-<!-- Paginacja -->
-<div class="pagination-controls">
-  <button mat-button (click)="prevPageRange()" [disabled]="page === 0">«</button>
-
-  <ng-container *ngFor="let p of pages()">
-    <button mat-button
-            *ngIf="p !== '...'; else ellipsis"
-            (click)="goToPage(castToNumber(p))"
-            [disabled]="loading"
-            [color]="castToNumber(p) === page ? 'primary' : undefined"
-            class="page-btn"
-            [ngClass]="{ 'active-page': castToNumber(p) === page }">
-      {{ castToNumber(p) + 1 }}
-    </button>
-    <ng-template #ellipsis>
-      <span class="ellipsis">...</span>
-    </ng-template>
-  </ng-container>
-
-  <button mat-button (click)="nextPageRange()" [disabled]="page >= totalPages - 1">»</button>
-</div>
-
-
-</div>
+  <!-- Pagination Controls -->
+  <div class="pagination-controls">
+    <button mat-button (click)="prevPageRange()" [disabled]="page === 0">«</button>
+    <ng-container *ngFor="let p of pages()">
+      <button mat-button
+              *ngIf="p !== '...'; else ellipsis"
+              (click)="goToPage(castToNumber(p))"
+              [disabled]="loading"
+              [ngClass]="{ 'active-page': castToNumber(p) === page }"
+              class="page-btn">
+        {{ castToNumber(p) + 1 }}
+      </button>
+      <ng-template #ellipsis>
+        <span class="ellipsis">...</span>
+      </ng-template>
+    </ng-container>
+    <button mat-button (click)="nextPageRange()" [disabled]="page >= totalPages - 1">»</button>
+  </div>
 </div>

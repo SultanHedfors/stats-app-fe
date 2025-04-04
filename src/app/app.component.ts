@@ -1,20 +1,27 @@
-import { Component } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+// app.component.ts
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from './auth/auth.service';
+import { RouterModule } from '@angular/router';
 import { NavbarComponent } from "./dashboard/navbar/navbar.component";
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule,RouterModule, NavbarComponent], // Import RouterModule for routing
-  templateUrl: './app.component.html'
+  imports: [CommonModule, RouterModule, NavbarComponent],
+  template: `
+    <app-navbar *ngIf="initialized && authService.isLoggedIn()"></app-navbar>
+    <router-outlet></router-outlet>
+  `
 })
-export class AppComponent {
-  title = 'employee-stats-fe';
-
+export class AppComponent implements OnInit {
+  initialized = false;
   constructor(public authService: AuthService) {}
 
-  logout() {
-    this.authService.logout();
-  }}
+  ngOnInit(): void {
+    // Simulate initialization delay if needed (e.g., token validation)
+    setTimeout(() => {
+      this.initialized = true;
+    }, 0);
+  }
+}

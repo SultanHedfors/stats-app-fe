@@ -7,9 +7,11 @@ import { AuthInterceptor } from './app/auth/auth.interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoggingInterceptor } from './app/util/LoggingInterceptor';
 import { CustomReuseStrategy } from './app/util/CustomReuseStrategy';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideAnimations(),
     provideRouter(routes),
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
     provideHttpClient(withInterceptorsFromDi()),

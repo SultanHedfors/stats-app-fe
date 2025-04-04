@@ -16,7 +16,7 @@
       <td mat-cell *matCellDef="let element">{{ element.activityId }}</td>
     </ng-container>
 
-    <!-- Date + Time Column with Calendar integration -->
+    <!-- Date + Time Column -->
     <ng-container matColumnDef="activityDateTime">
       <th mat-header-cell *matHeaderCellDef>
         <div class="header-with-calendar">
@@ -24,8 +24,6 @@
           <button mat-icon-button matTooltip="Wybierz datę" (click)="toggleCalendar($event)">
             <mat-icon>calendar_today</mat-icon>
           </button>
-          
-          <!-- Show Clear Filter button only when a date filter is active -->
           <button *ngIf="selectedDate" mat-stroked-button color="primary" (click)="clearDateFilter()">
             Wyczyść filtr daty
           </button>
@@ -39,21 +37,48 @@
         </div>
       </th>
       <td mat-cell *matCellDef="let element">
-        <!-- Display date in UTC to avoid unwanted timezone shifts -->
-        {{ element.activityDate | date:'yyyy-MM-dd':'UTC' }} {{ element.activityTime }}
+        {{ element.activityDate | date:'yyyy-MM-dd':'Europe/Warsaw' }} {{ element.activityTime }}
       </td>
     </ng-container>
 
     <!-- Employee Code Column -->
     <ng-container matColumnDef="employeeCode">
-      <th mat-header-cell *matHeaderCellDef>Kod pracownika</th>
+      <th mat-header-cell *matHeaderCellDef>Przypisana grupa pracowników</th>
       <td mat-cell *matCellDef="let element">{{ element.employeeCode }}</td>
     </ng-container>
 
     <!-- Employee Full Name Column -->
     <ng-container matColumnDef="employeeFullName">
-      <th mat-header-cell *matHeaderCellDef>Imię i nazwisko</th>
-      <td mat-cell *matCellDef="let element">{{ element.employeeFullName }}</td>
+      <th mat-header-cell *matHeaderCellDef>Przypisani pracownicy</th>
+      <td mat-cell *matCellDef="let element">
+        <div class="employee-assigned-list">
+          <ng-container *ngIf="element.employeesAssigned?.length > 0; else defaultName">
+            <div *ngIf="!isRowExpanded(element.activityId)" class="collapsed-list">
+              <div class="collapsed-row" *ngFor="let emp of element.employeesAssigned.slice(0,2); let last = last">
+                <span class="employee-text">{{ emp }}</span><!--
+                --><ng-container *ngIf="last && element.employeesAssigned.length > 2">
+                  <button class="more-button" (click)="toggleEmployeeList(element.activityId)">
+                    +{{ element.employeesAssigned.length - 2 }} więcej
+                  </button>
+                </ng-container>
+              </div>
+            </div>
+            <div *ngIf="isRowExpanded(element.activityId)" class="expanded-list">
+              <div class="expanded-row" *ngFor="let emp of element.employeesAssigned; let last = last">
+                <span class="employee-text">{{ emp }}</span><!--
+                --><ng-container *ngIf="last">
+                  <button class="more-button" (click)="toggleEmployeeList(element.activityId)">
+                    Zwiń
+                  </button>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #defaultName>
+            {{ element.employeeFullName }}
+          </ng-template>
+        </div>
+      </td>
     </ng-container>
 
     <!-- Procedure Name Column -->
@@ -73,26 +98,22 @@
       <th mat-header-cell *matHeaderCellDef>Akcje</th>
       <td mat-cell *matCellDef="let element">
         <div class="action-buttons">
-          <!-- Already Assigned -->
           <ng-container *ngIf="element.assignedToLoggedUser; else assignBtn">
             <button mat-icon-button class="assigned" disabled matTooltip="Przypisane do mnie">
               <mat-icon>verified_user</mat-icon>
             </button>
             <ng-container *ngIf="element.hasHistory; else restoreDisabled">
               <button mat-icon-button class="restore" (click)="restorePreviousAssignment(element.activityId)"
-                      matTooltip="Przywróć poprzednie przypisanie użytkownika">
+                matTooltip="Przywróć poprzednie przypisanie użytkownika">
                 <mat-icon>restore</mat-icon>
               </button>
             </ng-container>
             <ng-template #restoreDisabled>
-              <button mat-icon-button class="restore" disabled
-                      matTooltip="Brak poprzedniego przypisania użytkownika do zabiegu">
+              <button mat-icon-button class="restore" disabled matTooltip="Brak poprzedniego przypisania użytkownika do zabiegu">
                 <mat-icon>restore</mat-icon>
               </button>
             </ng-template>
           </ng-container>
-
-          <!-- Not Assigned: Show assignment actions or status -->
           <ng-template #assignBtn>
             <ng-container [ngSwitch]="assigningStatus[element.activityId] || 'idle'">
               <button mat-icon-button disabled *ngSwitchCase="'loading'" matTooltip="Przypisywanie...">
@@ -106,9 +127,9 @@
               </button>
               <span matTooltip="{{ element.procedureScheduledOnEmployeesWorkingDay ? 'Przypisz do mnie' : 'Przypisanie niedostępne: zgodnie z grafikiem nie pracujesz w tym dniu.' }}">
                 <button mat-icon-button class="assign"
-                        *ngSwitchCase="'idle'"
-                        [disabled]="!element.procedureScheduledOnEmployeesWorkingDay"
-                        (click)="assignProcedure(element.activityId)">
+                  *ngSwitchCase="'idle'"
+                  [disabled]="!element.procedureScheduledOnEmployeesWorkingDay"
+                  (click)="assignProcedure(element.activityId)">
                   <mat-icon>person_add</mat-icon>
                 </button>
               </span>
@@ -120,20 +141,14 @@
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-        [ngClass]="{ 'highlight-flash': highlightedRows[row.activityId] }">
-    </tr>
+      [ngClass]="{ 'highlight-flash': highlightedRows[row.activityId] }"></tr>
   </table>
 
-  <!-- Pagination Controls -->
   <div class="pagination-controls">
     <button mat-button (click)="prevPageRange()" [disabled]="page === 0">«</button>
     <ng-container *ngFor="let p of pages()">
-      <button mat-button
-              *ngIf="p !== '...'; else ellipsis"
-              (click)="goToPage(castToNumber(p))"
-              [disabled]="loading"
-              [ngClass]="{ 'active-page': castToNumber(p) === page }"
-              class="page-btn">
+      <button mat-button *ngIf="p !== '...'; else ellipsis" (click)="goToPage(castToNumber(p))"
+        [disabled]="loading" [ngClass]="{ 'active-page': castToNumber(p) === page }" class="page-btn">
         {{ castToNumber(p) + 1 }}
       </button>
       <ng-template #ellipsis>

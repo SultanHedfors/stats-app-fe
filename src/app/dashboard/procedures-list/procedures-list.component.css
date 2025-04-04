@@ -84,8 +84,7 @@ tr td {
     background-color: transparent;
     opacity: 1;
   }
-  20%,
-  80% {
+  20%, 80% {
     background-color: #ffa07a;
     opacity: 1;
   }
@@ -169,4 +168,56 @@ button[mat-icon-button][disabled] {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   padding: 8px;
+}
+
+/* Employee assigned list layout */
+.employee-assigned-list {
+  font-size: 0.85em;
+  white-space: normal;
+  word-wrap: break-word;
+  width: 150px;      /* Stała szerokość kolumny */
+  overflow: hidden;
+}
+
+.collapsed-list,
+.expanded-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.collapsed-row,
+.expanded-row {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.employee-text {
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
+}
+
+.more-button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0 4px;
+  margin-left: 4px;
+  font-size: 0.75rem;
+  color: #1abc9c;
+  vertical-align: middle;
+}
+
+.more-button:hover {
+  color: #0d8a8a;
+}
+
+/* Animacja rozwijania/zwijania */
+.employee-assigned-list {
+  transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  will-change: height, opacity;
+  display: block;
 }

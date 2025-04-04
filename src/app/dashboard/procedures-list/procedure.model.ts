@@ -9,6 +9,7 @@ export interface Procedure {
   assignedToLoggedUser?: boolean;
   hasHistory?: boolean;
   procedureScheduledOnEmployeesWorkingDay?: boolean;
+  employeesAssigned: string[];
 }
 
 export interface ProcedureResponse {

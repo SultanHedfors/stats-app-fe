@@ -9,7 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MiniCalendarComponent } from '../calendar/mini-calendar.component';
 import { ClickOutsideDirective } from '../calendar/click-outside.directive';
-
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-procedures-list',
@@ -22,10 +22,17 @@ import { ClickOutsideDirective } from '../calendar/click-outside.directive';
     MatTooltipModule,
     MatProgressSpinnerModule,
     MiniCalendarComponent,
-    ClickOutsideDirective // add our click-outside directive
+    ClickOutsideDirective
   ],
   templateUrl: './procedures-list.component.html',
-  styleUrls: ['./procedures-list.component.css']
+  styleUrls: ['./procedures-list.component.css'],
+  animations: [
+    trigger('expandCollapse', [
+      state('collapsed', style({ height: '0px', opacity: 0, overflow: 'hidden' })),
+      state('expanded', style({ height: '*', opacity: 1 })),
+      transition('collapsed <=> expanded', animate('300ms ease-in-out'))
+    ])
+  ]
 })
 export class ProceduresListComponent implements OnInit {
   procedures: Procedure[] = [];
@@ -33,7 +40,6 @@ export class ProceduresListComponent implements OnInit {
   highlightedRows: Record<number, boolean> = {};
   assigningStatus: Record<number, 'idle' | 'loading' | 'success' | 'error'> = {};
 
-  // Set the selectedDate to today by default
   selectedDate: Date | null = new Date();
   calendarOpenFor: 'global' | null = null;
   currentMonthKey = '';
@@ -54,18 +60,18 @@ export class ProceduresListComponent implements OnInit {
     'actions'
   ];
 
+  expandedRowId: number | null = null;
+
   constructor(private procedureService: ProcedureService) {}
 
   ngOnInit(): void {
     const today = new Date();
-    // Set the date filter to today when the page is visited
     this.selectedDate = today;
     const monthKey = this.procedureService.getMonthKey(today);
     this.currentMonthKey = monthKey;
     this.loading = true;
     this.procedureService.prefetchSurroundingMonths(monthKey).subscribe(() => {
       this.loadMonthData(monthKey);
-      // Immediately filter procedures by today's date
       this.filterByDate(today);
     });
   }
@@ -87,7 +93,6 @@ export class ProceduresListComponent implements OnInit {
     this.selectedDate = date;
     const newMonthKey = this.getMonthKey(date);
     this.calendarOpenFor = null;
-
     if (newMonthKey !== this.currentMonthKey) {
       this.loading = true;
       this.procedureService.prefetchSurroundingMonths(newMonthKey).subscribe(() => {
@@ -101,24 +106,17 @@ export class ProceduresListComponent implements OnInit {
 
   filterByDate(date: Date): void {
     const selectedDateStr = this.formatLocalDate(date);
-    const filtered = this.allProcedures.filter(p => {
-      // Use substring to extract the date portion as sent from the backend
-      const recordDateStr = p.activityDate.substr(0, 10);
-      return recordDateStr === selectedDateStr;
-    });
+    const filtered = this.allProcedures.filter(p => p.activityDate.substr(0, 10) === selectedDateStr);
     this.procedures = filtered;
     this.totalPages = 1;
     this.page = 0;
   }
+
   private formatLocalDate(date: Date): string {
-    const yyyy = date.getFullYear();
-    const mm = ('0' + (date.getMonth() + 1)).slice(-2);
-    const dd = ('0' + date.getDate()).slice(-2);
-    return `${yyyy}-${mm}-${dd}`;
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Warsaw' }).format(date);
   }
 
   clearDateFilter(): void {
-    // UX-friendly removal: clear filter and show full month data
     this.selectedDate = null;
     this.calendarOpenFor = null;
     this.totalPages = this.getTotalPages();
@@ -132,7 +130,6 @@ export class ProceduresListComponent implements OnInit {
     }
     this.calendarOpenFor = this.calendarOpenFor ? null : 'global';
   }
-  
 
   assignProcedure(activityId: number): void {
     this.assigningStatus[activityId] = 'loading';
@@ -171,23 +168,40 @@ export class ProceduresListComponent implements OnInit {
     setTimeout(() => (this.highlightedRows[activityId] = false), 1500);
   }
 
-  // Local pagination methods
+  getVisibleEmployees(element: Procedure): string[] {
+    if (!element.employeesAssigned) {
+      return [];
+    }
+    return this.isRowExpanded(element.activityId)
+      ? element.employeesAssigned
+      : element.employeesAssigned.slice(0, 2);
+  }
+
+  toggleEmployeeList(activityId: number): void {
+    this.expandedRowId = this.expandedRowId === activityId ? null : activityId;
+  }
+
+  isRowExpanded(activityId: number): boolean {
+    return this.expandedRowId === activityId;
+  }
+
+  isLastVisibleEmployee(element: Procedure, idx: number): boolean {
+    const employees = this.getVisibleEmployees(element);
+    return idx === employees.length - 1;
+  }
+
   pages(): (number | string)[] {
     const pages: (number | string)[] = [];
-
     if (this.totalPages <= this.visiblePageWindow + 2) {
       return Array.from({ length: this.totalPages }, (_, i) => i);
     }
-
     pages.push(0);
     let start = Math.max(1, this.page - 1);
     let end = Math.min(this.totalPages - 2, this.page + 1);
-
     if (start > 1) pages.push('...');
     for (let i = start; i <= end; i++) pages.push(i);
     if (end < this.totalPages - 2) pages.push('...');
     pages.push(this.totalPages - 1);
-
     return pages;
   }
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProcedureService } from './procedure.service';
-import { Procedure } from './procedure.model';
+import { Procedure, ProcedureResponse } from './procedure.model';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MiniCalendarComponent } from '../calendar/mini-calendar.component';
 import { ClickOutsideDirective } from '../calendar/click-outside.directive';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { Observable } from 'rxjs';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-procedures-list',
@@ -43,6 +45,8 @@ export class ProceduresListComponent implements OnInit {
   selectedDate: Date | null = new Date();
   calendarOpenFor: 'global' | null = null;
   currentMonthKey = '';
+  globalLoading = false;
+  
 
   loading = false;
   page = 0;
@@ -81,13 +85,19 @@ export class ProceduresListComponent implements OnInit {
   }
 
   loadMonthData(monthKey: string): void {
+    this.globalLoading = true;
+    this.loading = true;
+  
     this.allProcedures = this.procedureService.getProceduresByMonth(monthKey);
     this.totalPages = this.getTotalPages();
     this.page = 0;
     this.updateDisplayedProcedures();
     this.currentMonthKey = monthKey;
+  
     this.loading = false;
+    this.globalLoading = false;
   }
+  
 
   onDateSelected(date: Date): void {
     this.selectedDate = date;
@@ -119,10 +129,35 @@ export class ProceduresListComponent implements OnInit {
   clearDateFilter(): void {
     this.selectedDate = null;
     this.calendarOpenFor = null;
-    this.totalPages = this.getTotalPages();
-    this.page = 0;
-    this.updateDisplayedProcedures();
+    this.globalLoading = true;
+    this.procedureService.clearCache();
+  
+    const pagesToPrefetch = 5;
+    const requests: Observable<ProcedureResponse>[] = [];
+  
+    for (let page = 0; page < pagesToPrefetch; page++) {
+      requests.push(this.procedureService.fetchProceduresWithoutFilter(page, this.size));
+    }
+  
+    forkJoin(requests).subscribe({
+      next: responses => {
+        const allProcedures = responses.flatMap(response => response.content);
+        this.allProcedures = allProcedures;
+        this.totalPages = responses[0].totalPages;
+        this.page = 0;
+        this.updateDisplayedProcedures();
+      },
+      error: err => {
+        console.error('Error fetching procedures without filter:', err);
+      },
+      complete: () => {
+        this.loading = false;
+        this.globalLoading = false;
+      }
+    });
   }
+  
+  
 
   toggleCalendar(event?: MouseEvent): void {
     if (event) {
@@ -234,7 +269,51 @@ export class ProceduresListComponent implements OnInit {
   }
 
   goToPage(pageNumber: number): void {
-    this.page = pageNumber;
-    this.updateDisplayedProcedures();
+    const totalFetchedPages = Math.ceil(this.allProcedures.length / this.size);
+  
+    if (pageNumber < totalFetchedPages) {
+      this.page = pageNumber;
+      this.updateDisplayedProcedures();
+      return;
+    }
+  
+    this.globalLoading = true;
+  
+    const startPage = totalFetchedPages;
+    const pagesToFetch = 5;
+    const requests: Observable<ProcedureResponse>[] = [];
+  
+    for (let page = startPage; page < startPage + pagesToFetch; page++) {
+      requests.push(this.procedureService.fetchProceduresWithoutFilter(page, this.size));
+    }
+  
+    forkJoin(requests).subscribe({
+      next: responses => {
+        const newProcedures = responses.flatMap(response => response.content);
+  
+        // Jeżeli backend nie ma już więcej danych, to zakończ
+        if (newProcedures.length === 0) {
+          console.log('No more data to fetch.');
+          this.globalLoading = false;
+          return;
+        }
+  
+        this.allProcedures = [...this.allProcedures, ...newProcedures];
+        this.page = pageNumber;
+        this.totalPages = responses[0].totalPages; // upewnijmy się, że totalPages jest aktualizowane
+        this.updateDisplayedProcedures();
+      },
+      error: err => {
+        console.error('Error fetching additional procedures:', err);
+      },
+      complete: () => {
+        this.globalLoading = false;
+      }
+    });
   }
+  
+  
+
+
+  
 }

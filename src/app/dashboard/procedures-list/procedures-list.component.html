@@ -1,4 +1,6 @@
-<!-- Spinner when loading and no data available -->
+<div *ngIf="globalLoading" class="global-overlay">
+  <mat-spinner diameter="50"></mat-spinner>
+</div><!-- Spinner when loading and no data available -->
 <div *ngIf="loading && procedures.length === 0" class="spinner-container">
   <mat-spinner diameter="40"></mat-spinner>
 </div>

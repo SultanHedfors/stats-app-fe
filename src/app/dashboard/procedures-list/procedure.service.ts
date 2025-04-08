@@ -76,4 +76,21 @@ export class ProcedureService {
       next.toISOString().slice(0, 7)
     ];
   }
+
+  fetchProceduresWithoutFilter(page: number, size: number): Observable<ProcedureResponse> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+  
+    return this.http.get<ProcedureResponse>(this.baseUrl, { params }).pipe(
+      map(res => ({
+        ...res,
+        content: res.content.map(proc => ({
+          ...proc,
+          activityTime: proc.activityTime ? proc.activityTime.substr(11, 5) : ''
+        }))
+      }))
+    );
+  }
+  
 }

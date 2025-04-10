@@ -1,0 +1,20 @@
+<div class="pagination-controls">
+    <button mat-button (click)="prevPageRange.emit()" [disabled]="page === 0">«</button>
+    <ng-container *ngFor="let p of pages()">
+      <button
+        mat-button
+        *ngIf="p !== '...'; else ellipsis"
+        (click)="goToPage.emit(castToNumber(p))"
+        [disabled]="loading"
+        [ngClass]="{ 'active-page': castToNumber(p) === page }"
+        class="page-btn"
+      >
+        {{ castToNumber(p) + 1 }}
+      </button>
+      <ng-template #ellipsis>
+        <span class="ellipsis">...</span>
+      </ng-template>
+    </ng-container>
+    <button mat-button (click)="nextPageRange.emit()" [disabled]="page >= totalPages - 1">»</button>
+  </div>
+  

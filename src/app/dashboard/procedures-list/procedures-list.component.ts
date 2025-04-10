@@ -12,6 +12,7 @@ import { ClickOutsideDirective } from '../calendar/click-outside.directive';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { Observable } from 'rxjs';
 import { forkJoin } from 'rxjs';
+import { ProceduresPaginationComponent } from './procedures-pagination.component';
 
 @Component({
   selector: 'app-procedures-list',
@@ -24,7 +25,8 @@ import { forkJoin } from 'rxjs';
     MatTooltipModule,
     MatProgressSpinnerModule,
     MiniCalendarComponent,
-    ClickOutsideDirective
+    ClickOutsideDirective,
+    ProceduresPaginationComponent
   ],
   templateUrl: './procedures-list.component.html',
   styleUrls: ['./procedures-list.component.css'],

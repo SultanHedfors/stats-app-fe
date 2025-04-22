@@ -1,0 +1,22 @@
+<div class="upload-container" (drop)="onDrop($event)" (dragover)="onDragOver($event)">
+    <h2>Wgraj grafik</h2>
+  
+    <div class="drop-zone">
+      <p>Przeciągnij plik tutaj lub kliknij, aby wybrać</p>
+      <input type="file" accept=".xlsx" (change)="onFileSelected($event)">
+    </div>
+  
+    <div *ngIf="selectedFile">
+      <p>Wybrany plik: {{ selectedFile.name }}</p>
+    </div>
+  
+    <button mat-raised-button color="primary" (click)="uploadFile()" [disabled]="!selectedFile || uploading">
+      Wyślij
+    </button>
+  
+    <mat-progress-spinner *ngIf="uploading" [value]="uploadProgress" diameter="40"></mat-progress-spinner>
+  
+    <div class="success" *ngIf="successMessage">{{ successMessage }}</div>
+    <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  </div>
+  

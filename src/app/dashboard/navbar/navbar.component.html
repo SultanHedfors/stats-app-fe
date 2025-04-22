@@ -22,6 +22,17 @@
       </a>
     </li>
 
+    <li *ngIf="isLoggedIn() && userRole === 'ADMIN'">
+      <a
+        [routerLink]="['/upload-schedule']"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <mat-icon class="nav-icon">upload_file</mat-icon>
+        Wgraj grafik
+      </a>
+    </li>
+
     <li *ngIf="isLoggedIn()" class="logout">
       <a (click)="logout()" class="clickable">
         <mat-icon class="nav-icon">logout</mat-icon>

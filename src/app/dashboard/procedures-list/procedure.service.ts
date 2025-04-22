@@ -12,33 +12,32 @@ export class ProcedureService {
 
   constructor(private http: HttpClient) {}
 
+  private formatProcedure(proc: any): Procedure {
+    return {
+      ...proc,
+      activityTime: proc.activityTime ? proc.activityTime.substr(11, 5) : ''
+    };
+  }
+
   private fetchMonth(month: string): Observable<Procedure[]> {
     const params = new HttpParams()
       .set('month', month)
       .set('page', '0')
-      .set('size', '150');
+      .set('size', '500');
 
     return this.http.get<ProcedureResponse>(this.baseUrl, { params }).pipe(
-      map(res =>
-        res.content.map(proc => ({
-          ...proc,
-          // Transform backend time: extract "HH:mm" (ignore the dummy date)
-          activityTime: proc.activityTime ? proc.activityTime.substr(11, 5) : ''
-        }))
-      ),
+      map(res => res.content.map(this.formatProcedure)),
       tap(data => this.cache.set(month, data))
     );
   }
 
-  prefetchSurroundingMonths(centerMonth: string): Observable<void> {
-    const [prev, current, next] = this.getSurroundingMonths(new Date(`${centerMonth}-01`));
+  prefetchMonth(month: string): Observable<void> {
+    if (this.cache.has(month)) {
+      return of(undefined);
+    }
     return new Observable<void>(observer => {
-      forkJoin([
-        this.cache.has(prev) ? of(this.cache.get(prev)) : this.fetchMonth(prev),
-        this.cache.has(current) ? of(this.cache.get(current)) : this.fetchMonth(current),
-        this.cache.has(next) ? of(this.cache.get(next)) : this.fetchMonth(next)
-      ]).subscribe(() => {
-        this.currentMonthKey = current;
+      this.fetchMonth(month).subscribe(() => {
+        this.currentMonthKey = month;
         observer.next();
         observer.complete();
       });
@@ -46,7 +45,9 @@ export class ProcedureService {
   }
 
   getMonthKey(date: Date): string {
-    return date.toISOString().slice(0, 7);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    return `${year}-${month}`;
   }
 
   getProceduresByMonth(month: string): Procedure[] {
@@ -58,39 +59,50 @@ export class ProcedureService {
     this.currentMonthKey = null;
   }
 
-  restorePreviousAssignment(activityId: number): Observable<any> {
-    return this.http.post(`${this.baseUrl}/old`, { activityId });
+  restorePreviousAssignment(activityId: number): Observable<Procedure> {
+    return this.http.post<Procedure>(`${this.baseUrl}/old`, { activityId }).pipe(
+      map(this.formatProcedure)
+    );
   }
 
-  assignToCurrentUser(activityId: number): Observable<any> {
-    return this.http.patch(this.baseUrl, { activityId });
-  }
-
-  private getSurroundingMonths(date: Date): string[] {
-    const current = new Date(date.getFullYear(), date.getMonth(), 1);
-    const prev = new Date(current.getFullYear(), current.getMonth() - 1, 1);
-    const next = new Date(current.getFullYear(), current.getMonth() + 1, 1);
-    return [
-      prev.toISOString().slice(0, 7),
-      current.toISOString().slice(0, 7),
-      next.toISOString().slice(0, 7)
-    ];
+  assignToCurrentUser(activityId: number): Observable<Procedure> {
+    return this.http.patch<Procedure>(this.baseUrl, { activityId }).pipe(
+      map(this.formatProcedure)
+    );
   }
 
   fetchProceduresWithoutFilter(page: number, size: number): Observable<ProcedureResponse> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-  
+
     return this.http.get<ProcedureResponse>(this.baseUrl, { params }).pipe(
       map(res => ({
         ...res,
-        content: res.content.map(proc => ({
-          ...proc,
-          activityTime: proc.activityTime ? proc.activityTime.substr(11, 5) : ''
-        }))
+        content: res.content.map(this.formatProcedure)
       }))
     );
   }
-  
+
+  fetchProceduresByDate(date: Date, page: number, size: number): Observable<ProcedureResponse> {
+    const startDate = this.formatLocalDate(date);
+    const endDate = this.formatLocalDate(date);
+
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+
+    return this.http.get<ProcedureResponse>(this.baseUrl, { params }).pipe(
+      map(res => ({
+        ...res,
+        content: res.content.map(this.formatProcedure)
+      }))
+    );
+  }
+
+  private formatLocalDate(date: Date): string {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Warsaw' }).format(date);
+  }
 }

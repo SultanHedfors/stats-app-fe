@@ -1,16 +1,17 @@
 <div *ngIf="globalLoading" class="global-overlay">
   <mat-spinner diameter="50"></mat-spinner>
-</div><!-- Spinner when loading and no data available -->
+</div>
+
 <div *ngIf="loading && procedures.length === 0" class="spinner-container">
   <mat-spinner diameter="40"></mat-spinner>
 </div>
 
-<div *ngIf="!loading || procedures.length > 0" class="content-wrapper">
+<div *ngIf="!loading" class="content-wrapper">
   <h2 class="section-header">
     <mat-icon class="header-icon">list_alt</mat-icon>
     Lista zabiegów
   </h2>
-  
+
   <table mat-table [dataSource]="procedures" class="mat-elevation-z8 custom-table">
     <!-- Activity ID Column -->
     <ng-container matColumnDef="activityId">
@@ -25,9 +26,6 @@
           <span>Data i godzina</span>
           <button mat-icon-button matTooltip="Wybierz datę" (click)="toggleCalendar($event)">
             <mat-icon>calendar_today</mat-icon>
-          </button>
-          <button *ngIf="selectedDate" mat-stroked-button color="primary" (click)="clearDateFilter()">
-            Wyczyść filtr daty
           </button>
         </div>
         <div *ngIf="calendarOpenFor" class="calendar-popup" clickOutside (clickOutside)="calendarOpenFor = null">
@@ -46,7 +44,7 @@
     <!-- Employee Code Column -->
     <ng-container matColumnDef="employeeCode">
       <th mat-header-cell *matHeaderCellDef>Przypisana grupa pracowników</th>
-      <td mat-cell *matCellDef="let element">{{ element.employeeCode }}</td>
+      <td mat-cell *matCellDef="let element">{{ element.workMode }}</td>
     </ng-container>
 
     <!-- Employee Full Name Column -->
@@ -147,13 +145,13 @@
   </table>
 
   <app-procedures-pagination
-  [page]="page"
-  [totalPages]="totalPages"
-  [visiblePageWindow]="visiblePageWindow"
-  [loading]="loading"
-  (prevPageRange)="prevPageRange()"
-  (nextPageRange)="nextPageRange()"
-  (goToPage)="goToPage($event)"
-></app-procedures-pagination>
+    [page]="page"
+    [totalPages]="totalPages"
+    [visiblePageWindow]="visiblePageWindow"
+    [loading]="loading"
+    (prevPageRange)="prevPageRange()"
+    (nextPageRange)="nextPageRange()"
+    (goToPage)="goToPage($event)"
+  ></app-procedures-pagination>
 
 </div>

@@ -16,4 +16,5 @@ export interface ProcedureResponse {
   content: Procedure[];
   totalElements: number;
   totalPages: number;
+  size: number; // <-- dodaj to
 }

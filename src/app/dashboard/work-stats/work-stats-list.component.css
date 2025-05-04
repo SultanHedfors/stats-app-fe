@@ -94,6 +94,22 @@ tr td {
   transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Płynne przejście */
 }
 
+/* Kontener przycisku eksportu w prawym rogu */
+.export-container {
+  margin-left: auto; /* Wypycha kontener eksportu maksymalnie w prawo */
+  display: flex;
+  align-items: center;
+}
+
+.export-container button {
+  padding: 6px 12px;
+  font-size: 14px;
+  height: 36px;
+  line-height: 1;
+}
+
+
+/* Marginesy i inne style dla przycisku eksportu */
 
 
 
@@ -143,8 +159,13 @@ tr td {
 
 /* Margines na dole przycisków */
 .tabs {
-  margin-bottom: 20px; /* Margines oddzielający od tabeli */
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
 }
+
 
 /* Header styling */
 ::ng-deep .custom-table thead tr {

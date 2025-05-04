@@ -12,9 +12,6 @@
     Statystyki pracy
   </h2>
 
-  <div class="export-container">
-    <app-export-button (openDateRangeDialog)="openDateRangeDialog()"></app-export-button>
-  </div>
 
   <!-- Tab Buttons -->
   <div class="tabs">
@@ -22,7 +19,12 @@
     <button (click)="setTab('weekly')" [class.active]="currentTab === 'weekly'">Tygodniowe</button>
     <button (click)="setTab('monthly')" [class.active]="currentTab === 'monthly'">Miesięczne</button>
     <button (click)="setTab('yearly')" [class.active]="currentTab === 'yearly'">Roczne</button>
+    <div class="export-container">
+      <app-export-button (openDateRangeDialog)="openDateRangeDialog()"></app-export-button>
+    </div>
   </div>
+  
+
 
   <!-- Table for statistics -->
   <table mat-table class="mat-elevation-z8 custom-table">
@@ -78,14 +80,13 @@
       </tr>
     </tbody>
   </table>
-  
   <!-- Wyświetlanie okna dialogowego -->
-  <app-date-range-dialog 
-    *ngIf="isDateRangeDialogOpen" 
-    (closeDialog)="closeDateRangeDialog()" 
-    (generateFile)="generateFile($event.from, $event.to)">
-  </app-date-range-dialog>
-
+<app-date-range-dialog 
+  *ngIf="isDateRangeDialogOpen" 
+  (closeDialog)="closeDateRangeDialog()" 
+  (generateFile)="generateFile($event.from, $event.to)">
+</app-date-range-dialog>
+  
   <!-- Pagination for daily stats -->
   <div class="pagination">
     <button mat-button (click)="prevPageRange()" [disabled]="currentPage === 0">«</button>

@@ -1,5 +1,5 @@
 /* Dodajemy blur na tło strony */
-.dialog-overlay {
+::ng-deep .dialog-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,48 +11,173 @@
   }
   
   /* Styl okna dialogowego */
-  .dialog {
+  ::ng-deep .dialog {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #fff;
-    padding: 20px;
+    padding: 15px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;  /* Zapewnia, że okno dialogowe jest na wierzchu */
-    width: 400px;
+    width: 500px;  /* Zmniejszamy szerokość okna */
+    max-width: 100%;
+    font-family: 'Roboto', sans-serif;  /* Czcionka aplikacji */
   }
   
-  .dialog h2 {
+  /* Nagłówek okna dialogowego */
+  ::ng-deep .dialog h2 {
     font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
+    font-weight: 600;
+    margin-top: 2%;
+    margin-bottom: 30px;
     color: #2c3e50;
+    font-family: 'Lato', 'Roboto', sans-serif;  /* Czcionka nagłówka */
+  }
+  ::ng-deep .date-input-container {
+    display: flex;
+    gap: 0px; /* Odstęp między polami */
+    margin-left: 20px; /* Lewy margines */
+    width: 100%; /* Ustawiamy, żeby kontener zajmował 100% dostępnej szerokości */
+  }
+  /* Układ pól daty w jednym rzędzie */
+  ::ng-deep .dialog .date-input {
+    display: flex;               /* Używamy flexboxa */
+    align-items: center;         /* Wyrównanie w pionie */
+    gap: 10px;                   /* Przestrzeń między polami */
+    margin-bottom: 10px;
+    margin-left: 5px;
+    flex-wrap: nowrap;           /* Zapewnia, że pola będą w jednym rzędzie */
+    width: 50%;                 /* Zajmują 100% dostępnej szerokości */
   }
   
-  .dialog .date-input {
-    margin-bottom: 20px;
+  ::ng-deep .dialog .date-input label {
+    font-size: 16px;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    font-family: 'Roboto', sans-serif;
   }
   
-  .dialog .date-input label {
+  ::ng-deep .dialog .date-input input {
+    width: 65%;                  /* Zmniejszamy szerokość pól do 45% */
+    padding: 4px;                /* Zmniejszamy padding, aby były bardziej kompaktowe */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;  /* Czcionka pola daty */
+    box-sizing: border-box;      /* Zapewnia, że padding nie wpływa na szerokość */
+    font-size: 14px;             /* Zmniejszamy czcionkę */
+  }
+  
+  /* Stylizacja przycisku "Wygeneruj" */
+  ::ng-deep .dialog button.mat-raised-button {
+    width: 48%;  /* Szerokość przycisku na 48% */
+    background-color: #1abc9c !important;
+    color: white !important;
+    font-weight: 600;
+    padding: 12px 0;
+    border-radius: 30px;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 20px;
+    display: inline-block;  /* Ustawiamy przycisk w poziomie */
+    margin-right: 4%;  /* Drobna przestrzeń pomiędzy przyciskami */
+  }
+
+  
+  ::ng-deep .dialog button.mat-raised-button:hover {
+    background-color: #16a085 !important;
+    transform: scale(1.05);
+  }
+  
+  ::ng-deep .dialog button.mat-raised-button:active {
+    background-color: #148f77 !important;
+    transform: scale(0.98);
+  }
+  
+  ::ng-deep .dialog button.mat-button:hover {
+    background-color: #1abc9c;
+    color: white;
+    transform: scale(1.05);
+  }
+
+  
+  
+  ::ng-deep .dialog button.mat-button:active {
+    background-color: #148f77;
+    color: white;
+    transform: scale(0.98);
+  }
+  ::ng-deep .dialog .button-container {
+    display: flex; /* Używamy flexboxa do układu przycisków */
+    justify-content: left; /* Wyśrodkowujemy przyciski w poziomie */
+    gap: 10px; /* Dodajemy odstęp między przyciskami */
+    width: 100%;  /* Kontener zajmuje 100% szerokości */
+    margin-top: 20px; /* Dodajemy margines górny */
+    margin-left: 50px;
+  }
+  
+  /* Komponent kalendarza - poprawa wyglądu */
+  ::ng-deep .calendar-container {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  ::ng-deep .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-size: 16px;
     color: #2c3e50;
   }
   
-  .dialog .date-input input {
-    width: 100%;
+  ::ng-deep .calendar-header button {
+    background-color: transparent;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+  }
+  
+  ::ng-deep .calendar-header button mat-icon {
+    color: #1abc9c;
+  }
+  
+  ::ng-deep .calendar-day {
+    text-align: center;
     padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-top: 5px;
+    cursor: pointer;
   }
   
-  .dialog button {
-    margin-top: 10px;
+  ::ng-deep .calendar-day.selected {
+    background-color: #1abc9c;
+    color: white;
+    border-radius: 50%;
   }
   
-  .dialog button.mat-raised-button {
-    width: 100%;
+  ::ng-deep .calendar-day.today {
+    font-weight: bold;
+    color: #e74c3c;
+  }
+  
+  ::ng-deep .calendar-day:hover {
+    background-color: #f0f9f8;
+  }
+  
+  /* Responsywność */
+  @media (max-width: 500px) {
+    ::ng-deep .dialog {
+      width: 90%;  /* Dialog zajmuje 90% szerokości na mniejszych ekranach */
+    }
+  
+    ::ng-deep .dialog .date-input input {
+      width: 100%;  /* Zmieniamy szerokość na 100% na małych ekranach */
+    }
+  
+    ::ng-deep .dialog button.mat-raised-button {
+      width: 100%;
+    }
   }
   

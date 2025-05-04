@@ -5,12 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-export-button',
   templateUrl: './export-button.component.html',
   imports: [
-    BrowserModule,
+    CommonModule,
     MatIconModule,  // Importowanie modułu MatIcon
     MatButtonModule, // Importowanie modułu MatButton
     FormsModule, // Importowanie FormsModule dla ngModel

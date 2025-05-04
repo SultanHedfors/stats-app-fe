@@ -1,28 +1,38 @@
 // date-range-dialog.component.ts
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { BrowserModule } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-date-range-dialog',
   templateUrl: './date-range-dialog.component.html',
   imports: [
-    BrowserModule,
-    MatIconModule,  // Importowanie modułu MatIcon
+    CommonModule,
+    MatIconModule, // Importowanie modułu MatIcon
     MatButtonModule, // Importowanie modułu MatButton
-    FormsModule, // Importowanie FormsModule dla ngModel
-  ],
+    FormsModule,
+],
   styleUrls: ['./date-range-dialog.component.css']
 })
 export class DateRangeDialogComponent {
+openCalendar(arg0: string) {
+throw new Error('Method not implemented.');
+}
+selectDate($event: Event) {
+throw new Error('Method not implemented.');
+}
+closeCalendar() {
+throw new Error('Method not implemented.');
+}
   @Output() closeDialog = new EventEmitter<void>();
   @Output() generateFile = new EventEmitter<{ from: string, to: string }>();
 
   isDialogOpen = false;
   fromDate: string = '';
   toDate: string = '';
+isCalendarOpen: any;
 
   ngOnInit() {
     this.isDialogOpen = true;  // Pokazuje okno dialogowe po załadowaniu komponentu

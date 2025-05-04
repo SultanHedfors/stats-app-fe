@@ -3,7 +3,9 @@ import { StatisticsService } from './work-stats-list.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon'; 
-import { MatButtonModule } from '@angular/material/button';  
+import { MatButtonModule } from '@angular/material/button';
+import { ExportButtonComponent } from "../export-button/export-button.component";
+import { DateRangeDialogComponent } from "../export-button/date-range-dialog.component";  
 
 interface DailyStat {
   date: string;
@@ -43,14 +45,19 @@ interface StatisticsDto {
   selector: 'app-work-stats',
   templateUrl: './work-stats-list.component.html',
   imports: [
-    MatProgressSpinnerModule, 
-    MatIconModule, 
-    MatButtonModule,  
-    CommonModule
-  ],
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatButtonModule,
+    CommonModule,
+    ExportButtonComponent,
+    DateRangeDialogComponent
+],
   styleUrls: ['./work-stats-list.component.css']
 })
 export class WorkStatsListComponent implements OnInit {
+generateFile(arg0: any,arg1: any) {
+throw new Error('Method not implemented.');
+}
   statistics: StatisticsDto[] = [];
   isLoading = true;
   error: string | null = null;
@@ -64,6 +71,7 @@ export class WorkStatsListComponent implements OnInit {
   totalDailyPages: number = 0; 
   globalLoading: boolean = false; 
   loading: boolean = false; 
+  isDateRangeDialogOpen: boolean=false;
 
   constructor(private statisticsService: StatisticsService) {}
 
@@ -205,4 +213,14 @@ generateDateRange(dates: string[], page: number): string[] {
       this.setPage(this.currentPage);
     }
   }
+
+  // Otwórz okno dialogowe
+openDateRangeDialog(): void {
+  this.isDateRangeDialogOpen = true;  // Ustawiamy na true, aby dialog był widoczny
+}
+
+// Zamknij okno dialogowe
+closeDateRangeDialog(): void {
+  this.isDateRangeDialogOpen = false;  // Ustawiamy na false, aby dialog był zamknięty
+}
 }

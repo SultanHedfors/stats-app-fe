@@ -2,20 +2,29 @@
 <div *ngIf="isDialogOpen" class="dialog-overlay"></div>
 
 <div class="dialog">
-  <h2>Przedział dat wykonania zabiegów</h2>
+  <h2>Opcje eksportu:</h2>
 
-  <div class="date-input">
-    <label for="from">OD:</label>
-    <input type="date" id="from" [(ngModel)]="fromDate">
-    <button mat-icon-button><mat-icon>calendar_today</mat-icon></button>
+  <!-- Pola daty w jednym rzędzie -->
+  <div class="date-input-container">
+    <div class="date-input">
+      <label for="from">Od:</label>
+      <input type="date" id="from" [(ngModel)]="fromDate">
+    </div>
+  
+    <div class="date-input">
+      <label for="to">Do:</label>
+      <input type="date" id="to" [(ngModel)]="toDate">
+    </div>
   </div>
 
-  <div class="date-input">
-    <label for="to">DO:</label>
-    <input type="date" id="to" [(ngModel)]="toDate">
-    <button mat-icon-button><mat-icon>calendar_today</mat-icon></button>
+  <!-- Przyciski -->
+<!-- Kontener z wycentrowanymi przyciskami -->
+<div class="button-container">
+    <button mat-raised-button (click)="onGenerate()">
+        <mat-icon>download</mat-icon> Wygeneruj i pobierz plik
+      </button>
+      
+    <button mat-button (click)="close()">Zamknij</button>
   </div>
-
-  <button mat-raised-button color="primary" (click)="onGenerate()">Wygeneruj i pobierz plik</button>
-  <button mat-button (click)="close()">Zamknij</button>
+  
 </div>

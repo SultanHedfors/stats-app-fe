@@ -1,13 +1,30 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body { 
+  height: 100%; 
+}
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+}
 
 /* Reduce table row height and font globally */
 :root {
-    --mat-table-row-item-container-height: 28px;
-    --mat-table-row-item-label-text-size: 12px;
-    --mat-table-row-item-label-text-line-height: 16px;
-    --mat-table-row-item-label-text-tracking: 0;
-  }
-  
+  --mat-table-row-item-container-height: 28px;
+  --mat-table-row-item-label-text-size: 12px;
+  --mat-table-row-item-label-text-line-height: 16px;
+  --mat-table-row-item-label-text-tracking: 0;
+
+  /* Overriding Material Design button variables */
+  --mdc-protected-button-label-text-color: white !important; /* Button text color */
+  --mdc-protected-button-container-color: #1abc9c !important; /* Button background color */
+  --mat-sys-primary: #1abc9c !important; /* Primary color */
+  --mat-sys-primary-container: #1abc9c !important; /* Primary container color */
+  --mat-sys-surface: #fff !important; /* Surface color (dialog background) */
+}
+
+/* Stylizacja przycisku eksportu */
+
+
+/* Dialog overlay background */
+

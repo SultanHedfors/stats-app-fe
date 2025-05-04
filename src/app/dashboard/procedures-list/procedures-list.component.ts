@@ -142,9 +142,6 @@ export class ProceduresListComponent implements OnInit {
     });
   }
 
-  private formatLocalDate(date: Date): string {
-    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Warsaw' }).format(date);
-  }
 
   clearDateFilter(): void {
     this.isDateFilterActive = false;

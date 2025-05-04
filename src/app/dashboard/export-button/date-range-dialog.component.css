@@ -1,0 +1,58 @@
+/* Dodajemy blur na tło strony */
+.dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);  /* Subtelne tło */
+    backdrop-filter: blur(5px);  /* Rozmycie tła */
+    z-index: 999;  /* Ustawiamy na wyższym poziomie niż reszta strony */
+  }
+  
+  /* Styl okna dialogowego */
+  .dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;  /* Zapewnia, że okno dialogowe jest na wierzchu */
+    width: 400px;
+  }
+  
+  .dialog h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #2c3e50;
+  }
+  
+  .dialog .date-input {
+    margin-bottom: 20px;
+  }
+  
+  .dialog .date-input label {
+    font-size: 16px;
+    color: #2c3e50;
+  }
+  
+  .dialog .date-input input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 5px;
+  }
+  
+  .dialog button {
+    margin-top: 10px;
+  }
+  
+  .dialog button.mat-raised-button {
+    width: 100%;
+  }
+  

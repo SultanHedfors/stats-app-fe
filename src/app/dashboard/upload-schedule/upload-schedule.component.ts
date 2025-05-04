@@ -19,6 +19,9 @@ export class UploadScheduleComponent {
   uploading = false;
   errorMessage = '';
   successMessage = '';
+  isDragging = false; // Dodajemy zmienną do śledzenia stanu przeciągania pliku
+  globalLoading = false; // Dodajemy zmienną do zarządzania stanem globalnego ładowania
+  isLoading = false; // Dodajemy zmienną do zarządzania stanem lokalnego ładowania
 
   constructor(private http: HttpClient) {}
 
@@ -52,42 +55,58 @@ export class UploadScheduleComponent {
 
   uploadFile(): void {
     if (!this.selectedFile) return;
-
+  
     const formData = new FormData();
     formData.append('file', this.selectedFile);
-
+  
     this.uploading = true;
     this.uploadProgress = 0;
-
+  
+    this.isLoading = true;
+    this.globalLoading = true;
+  
     this.http.post('http://localhost:8080/api/upload-schedule', formData, {
         reportProgress: true,
         observe: 'events',
-        responseType: 'text' // <- DODAJ TO
+        responseType: 'json' // Zmieniamy na JSON, aby odpowiedź była łatwiejsza do obsługi
       })
       .subscribe({
-      next: (event: any) => {
-        if (event.type === 1 && event.total) {
-          this.uploadProgress = Math.round((100 * event.loaded) / event.total);
-        } else if (event.type === 4) {
-          this.successMessage = 'Plik został pomyślnie przesłany!';
-          this.selectedFile = null;
-          this.uploadProgress = 100;
+        next: (event: any) => {
+          if (event.type === 1 && event.total) {
+            this.uploadProgress = Math.round((100 * event.loaded) / event.total);
+          } else if (event.type === 4) {
+            this.successMessage = 'Plik został pomyślnie przesłany!';
+            this.selectedFile = null;
+            this.uploadProgress = 100;
+          }
+        },
+        error: (error) => {
+          const errorMessage = error.error?.message || 'Nieznany błąd';
+          this.errorMessage = `${errorMessage}`;
+          this.uploading = false;
+          this.globalLoading = false;
+        },
+        complete: () => {
+          this.isLoading = false;
+          this.globalLoading = false;
         }
-      },
-      error: () => {
-        this.errorMessage = 'Wystąpił błąd podczas przesyłania pliku.';
-        this.uploading = false;
-      },
-      complete: () => this.uploading = false
     });
   }
+  
 
   onDragOver(event: DragEvent): void {
     event.preventDefault();
+    this.isDragging = true; // Ustawiamy isDragging na true, gdy plik jest nad strefą
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = false; // Ustawiamy isDragging na false, gdy plik opuszcza strefę
   }
 
   onDrop(event: DragEvent): void {
     event.preventDefault();
+    this.isDragging = false; // Ustawiamy isDragging na false po upuszczeniu pliku
     if (event.dataTransfer?.files.length) {
       this.onFileDropped(event.dataTransfer.files[0]);
     }

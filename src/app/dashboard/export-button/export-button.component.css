@@ -1,0 +1,38 @@
+/* Przycisk eksportu */
+button.mat-raised-button {
+    background-color: #1abc9c;
+    color: white;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 30px;  /* Zaokrąglone rogi */
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;  /* Dodanie przestrzeni między ikoną a tekstem */
+  }
+  
+  button.mat-raised-button:hover {
+    background-color: #16a085;  /* Ciut ciemniejszy odcień */
+    transform: scale(1.05);  /* Delikatny efekt powiększenia */
+  }
+  
+  button.mat-raised-button:active {
+    background-color: #148f77;  /* Dodatkowy efekt aktywnego kliknięcia */
+    transform: scale(0.98);  /* Zmniejszenie przycisku przy kliknięciu */
+  }
+  
+  /* Ikona w przycisku */
+  button.mat-raised-button mat-icon {
+    font-size: 20px;  /* Zmniejszenie rozmiaru ikony, aby była dobrze widoczna */
+  }
+  
+  /* Styl przycisku, gdy jest wyłączony */
+  button.mat-raised-button[disabled] {
+    background-color: #d1d8e0;
+    color: #9aa5b1;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  

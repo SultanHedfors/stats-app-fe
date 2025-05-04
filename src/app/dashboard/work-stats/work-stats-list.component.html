@@ -1,0 +1,99 @@
+<div *ngIf="globalLoading" class="global-overlay">
+  <mat-spinner diameter="50"></mat-spinner>
+</div>
+
+<div *ngIf="isLoading" class="spinner-container">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<div *ngIf="!isLoading" class="content-wrapper">
+  <h2 class="section-header">
+    <mat-icon class="header-icon">list_alt</mat-icon>
+    Statystyki pracy
+  </h2>
+
+  <div class="export-container">
+    <app-export-button (openDateRangeDialog)="openDateRangeDialog()"></app-export-button>
+  </div>
+
+  <!-- Tab Buttons -->
+  <div class="tabs">
+    <button (click)="setTab('daily')" [class.active]="currentTab === 'daily'">Dzienne</button>
+    <button (click)="setTab('weekly')" [class.active]="currentTab === 'weekly'">Tygodniowe</button>
+    <button (click)="setTab('monthly')" [class.active]="currentTab === 'monthly'">Miesięczne</button>
+    <button (click)="setTab('yearly')" [class.active]="currentTab === 'yearly'">Roczne</button>
+  </div>
+
+  <!-- Table for statistics -->
+  <table mat-table class="mat-elevation-z8 custom-table">
+    <thead>
+      <tr>
+        <th>Pracownik</th>
+        <!-- Dynamically add columns based on the selected tab -->
+        <ng-container *ngIf="currentTab === 'daily'">
+          <th *ngFor="let day of dailyDates">{{ day }}</th>
+        </ng-container>
+        <ng-container *ngIf="currentTab === 'weekly'">
+          <th *ngFor="let week of weeklyDates">{{ week }}</th>
+        </ng-container>
+        <ng-container *ngIf="currentTab === 'monthly'">
+          <th *ngFor="let month of monthlyDates">{{ month }}</th>
+        </ng-container>
+        <ng-container *ngIf="currentTab === 'yearly'">
+          <th *ngFor="let year of yearlyDates">{{ year }}</th>
+        </ng-container>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let stat of statistics" [ngClass]="{'highlight': stat.currentUser}">
+        <td>{{ stat.employeeCode }}</td>
+
+        <!-- Dzienna statystyka -->
+        <ng-container *ngIf="currentTab === 'daily'">
+          <td *ngFor="let day of dailyDates">
+            {{ getDailyStatsForDate(stat, day) }}
+          </td>
+        </ng-container>
+
+        <!-- Tygodniowa statystyka -->
+        <ng-container *ngIf="currentTab === 'weekly'">
+          <td *ngFor="let week of weeklyDates">
+            {{ getWeeklyStatsForDate(stat, week) }}
+          </td>
+        </ng-container>
+
+        <!-- Miesięczna statystyka -->
+        <ng-container *ngIf="currentTab === 'monthly'">
+          <td *ngFor="let month of monthlyDates">
+            {{ getMonthlyStatsForDate(stat, month) }}
+          </td>
+        </ng-container>
+
+        <!-- Roczna statystyka -->
+        <ng-container *ngIf="currentTab === 'yearly'">
+          <td *ngFor="let year of yearlyDates">
+            {{ getYearlyStatsForDate(stat, year) }}
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+  
+  <!-- Wyświetlanie okna dialogowego -->
+  <app-date-range-dialog 
+    *ngIf="isDateRangeDialogOpen" 
+    (closeDialog)="closeDateRangeDialog()" 
+    (generateFile)="generateFile($event.from, $event.to)">
+  </app-date-range-dialog>
+
+  <!-- Pagination for daily stats -->
+  <div class="pagination">
+    <button mat-button (click)="prevPageRange()" [disabled]="currentPage === 0">«</button>
+    <ng-container *ngFor="let page of [].constructor(totalDailyPages); let i = index">
+      <button mat-button (click)="setPage(i)" [class.active]="i === currentPage">
+        {{ i + 1 }}
+      </button>
+    </ng-container>
+    <button mat-button (click)="nextPageRange()" [disabled]="currentPage === totalDailyPages - 1">»</button>
+  </div>
+</div>

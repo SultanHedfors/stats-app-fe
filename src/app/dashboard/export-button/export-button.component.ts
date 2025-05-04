@@ -1,36 +1,39 @@
-// export-button.component.ts
 import { Component, EventEmitter, Output } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
+import { DateRangeDialogComponent } from './date-range-dialog.component';
+
 
 @Component({
   selector: 'app-export-button',
+  standalone: true,
   templateUrl: './export-button.component.html',
   imports: [
     CommonModule,
-    MatIconModule,  // Importowanie modułu MatIcon
-    MatButtonModule, // Importowanie modułu MatButton
-    FormsModule, // Importowanie FormsModule dla ngModel
-  ],
+    MatIconModule,
+    MatButtonModule,
+    FormsModule,
+    DateRangeDialogComponent,
+],
   styleUrls: ['./export-button.component.css']
 })
 export class ExportButtonComponent {
   @Output() openDateRangeDialog = new EventEmitter<void>();
   isLoading = false;
+  isDialogVisible = false;
 
   constructor(private http: HttpClient) {}
 
   openDialog(): void {
-    this.openDateRangeDialog.emit();
+    this.isDialogVisible = true;
   }
 
   generateFile(from: string, to: string): void {
     this.isLoading = true;
-    this.http.get(`/api/stats-export/xlsx?from=${from}&to=${to}`, { responseType: 'blob' })
+    this.http.get(`http://localhost:8080/api/stats-export/xlsx?from=${from}&to=${to}`, { responseType: 'blob' })
       .subscribe(
         (response: Blob) => {
           const a = document.createElement('a');
@@ -46,4 +49,5 @@ export class ExportButtonComponent {
         }
       );
   }
+  
 }

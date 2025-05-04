@@ -1,4 +1,9 @@
 <button mat-raised-button class="custom-export-button" (click)="openDialog()">
     <mat-icon>file_download</mat-icon> Eksportuj do Excela (.xlsx)
   </button>
-  
+  <!-- Okno dialogowe -->
+<app-date-range-dialog
+*ngIf="isDialogVisible"
+(closeDialog)="isDialogVisible = false"
+(generateFile)="generateFile($event.from, $event.to)">
+</app-date-range-dialog>

@@ -1,4 +1,3 @@
-// date-range-dialog.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -7,35 +6,26 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-date-range-dialog',
+  standalone: true,
   templateUrl: './date-range-dialog.component.html',
   imports: [
     CommonModule,
-    MatIconModule, // Importowanie modułu MatIcon
-    MatButtonModule, // Importowanie modułu MatButton
+    MatIconModule,
+    MatButtonModule,
     FormsModule,
-],
+  ],
   styleUrls: ['./date-range-dialog.component.css']
 })
 export class DateRangeDialogComponent {
-openCalendar(arg0: string) {
-throw new Error('Method not implemented.');
-}
-selectDate($event: Event) {
-throw new Error('Method not implemented.');
-}
-closeCalendar() {
-throw new Error('Method not implemented.');
-}
   @Output() closeDialog = new EventEmitter<void>();
   @Output() generateFile = new EventEmitter<{ from: string, to: string }>();
 
   isDialogOpen = false;
   fromDate: string = '';
   toDate: string = '';
-isCalendarOpen: any;
 
   ngOnInit() {
-    this.isDialogOpen = true;  // Pokazuje okno dialogowe po załadowaniu komponentu
+    this.isDialogOpen = true;
   }
 
   validateDates(): boolean {
@@ -57,7 +47,7 @@ isCalendarOpen: any;
   }
 
   close(): void {
-    this.isDialogOpen = false;  // Zamknięcie okna dialogowego
+    this.isDialogOpen = false;
     this.closeDialog.emit();
   }
 }

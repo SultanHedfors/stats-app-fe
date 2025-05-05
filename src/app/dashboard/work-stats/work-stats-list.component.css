@@ -188,6 +188,15 @@ button[mat-icon-button][disabled] {
   animation: fade-salmon 2s ease-in-out forwards;
 }
 
+/* Styl dla podsumowujących wierszy */
+.summary-row {
+  background-color: #f1f9f4;  /* ten sam co highlight */
+  font-weight: bold;
+  color: #2c3e50;
+
+}
+
+
 @keyframes fade-salmon {
   0% {
     background-color: transparent;

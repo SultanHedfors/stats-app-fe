@@ -223,4 +223,93 @@ openDateRangeDialog(): void {
 closeDateRangeDialog(): void {
   this.isDateRangeDialogOpen = false;  // Ustawiamy na false, aby dialog był zamknięty
 }
+
+calculateDailyAverage(date: string): string {
+  const validScores = this.statistics
+    .map(stat => {
+      const statForDate = stat.dailyStats.find(d => d.date === date);
+      return statForDate ? parseFloat(statForDate.score as any) : NaN;
+    })
+    .filter(score => !isNaN(score));
+
+  if (validScores.length === 0) return '-';
+
+  const sum = validScores.reduce((acc, score) => acc + score, 0);
+  const average = sum / validScores.length;
+
+  return average.toFixed(1);
+}
+
+calculateOverallAverage(tab: string): string {
+  let allValidScores: number[] = [];
+
+  this.statistics.forEach(stat => {
+    let statValues: number[] = [];
+
+    if (tab === 'daily') {
+      statValues = stat.dailyStats.map(ds => parseFloat(ds.score as any)).filter(score => !isNaN(score));
+    } else if (tab === 'weekly') {
+      statValues = stat.weeklyStats.map(ws => parseFloat(ws.score as any)).filter(score => !isNaN(score));
+    } else if (tab === 'monthly') {
+      statValues = stat.monthlyStats.map(ms => parseFloat(ms.score as any)).filter(score => !isNaN(score));
+    } else if (tab === 'yearly') {
+      statValues = stat.yearlyStats.map(ys => parseFloat(ys.score as any)).filter(score => !isNaN(score));
+    }
+
+    allValidScores = allValidScores.concat(statValues);
+  });
+
+  if (allValidScores.length === 0) return '-';
+
+  const sum = allValidScores.reduce((acc, score) => acc + score, 0);
+  const average = sum / allValidScores.length;
+
+  return average.toFixed(1);
+}
+
+calculateWeeklyAverage(week: string): string {
+  const validScores = this.statistics
+    .map(stat => {
+      const statForWeek = stat.weeklyStats.find(w => w.weekStart === week);
+      return statForWeek ? parseFloat(statForWeek.score as any) : NaN;
+    })
+    .filter(score => !isNaN(score));
+
+  if (validScores.length === 0) return '-';
+
+  const average = validScores.reduce((sum, val) => sum + val, 0) / validScores.length;
+  return average.toFixed(1);
+}
+
+calculateMonthlyAverage(month: string): string {
+  const validScores = this.statistics
+    .map(stat => {
+      const statForMonth = stat.monthlyStats.find(m => m.month === month);
+      return statForMonth ? parseFloat(statForMonth.score as any) : NaN;
+    })
+    .filter(score => !isNaN(score));
+
+  if (validScores.length === 0) return '-';
+
+  const average = validScores.reduce((sum, val) => sum + val, 0) / validScores.length;
+  return average.toFixed(1);
+}
+
+calculateYearlyAverage(year: string): string {
+  const numericYear = parseInt(year, 10);  // przekształcenie na liczbę
+
+  const validScores = this.statistics
+    .map(stat => {
+      const statForYear = stat.yearlyStats.find(y => y.year === numericYear);
+      return statForYear ? parseFloat(statForYear.score as any) : NaN;
+    })
+    .filter(score => !isNaN(score));
+
+  if (validScores.length === 0) return '-';
+
+  const average = validScores.reduce((sum, val) => sum + val, 0) / validScores.length;
+  return average.toFixed(1);
+}
+
+
 }

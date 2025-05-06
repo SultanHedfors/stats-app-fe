@@ -55,44 +55,66 @@ export class UploadScheduleComponent {
 
   uploadFile(): void {
     if (!this.selectedFile) return;
-  
+
     const formData = new FormData();
     formData.append('file', this.selectedFile);
-  
+
     this.uploading = true;
     this.uploadProgress = 0;
-  
+
     this.isLoading = true;
     this.globalLoading = true;
-  
+
     this.http.post('http://localhost:8080/api/upload-schedule', formData, {
-        reportProgress: true,
-        observe: 'events',
-        responseType: 'json' // Zmieniamy na JSON, aby odpowiedź była łatwiejsza do obsługi
-      })
-      .subscribe({
-        next: (event: any) => {
-          if (event.type === 1 && event.total) {
-            this.uploadProgress = Math.round((100 * event.loaded) / event.total);
-          } else if (event.type === 4) {
-            this.successMessage = 'Plik został pomyślnie przesłany!';
-            this.selectedFile = null;
-            this.uploadProgress = 100;
-          }
-        },
-        error: (error) => {
-          const errorMessage = error.error?.message || 'Nieznany błąd';
-          this.errorMessage = `${errorMessage}`;
-          this.uploading = false;
-          this.globalLoading = false;
-        },
-        complete: () => {
-          this.isLoading = false;
-          this.globalLoading = false;
+      reportProgress: true,
+      observe: 'events',
+      responseType: 'json'
+    })
+    .subscribe({
+      next: (event: any) => {
+        if (event.type === 1 && event.total) {
+          this.uploadProgress = Math.round((100 * event.loaded) / event.total);
+        } else if (event.type === 4) {
+          this.successMessage = 'Plik został pomyślnie przesłany!';
+          this.selectedFile = null;
+          this.uploadProgress = 100;
         }
+      },
+      error: (error) => {
+        const errorMessage = error.error?.message || 'Nieznany błąd';
+        this.errorMessage = `${errorMessage}`;
+        this.uploading = false;
+        this.globalLoading = false;
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.globalLoading = false;
+        this.backendProcessComplete(); // Dodatkowe zakończenie procesu
+      }
     });
   }
-  
+
+  private backendProcessComplete(): void {
+    // Zmiana stanu spinnera i komunikatów
+    this.uploading = false;
+    this.successMessage = 'Przetwarzanie zakończone!';
+    this.errorMessage = '';
+    // Możliwe, że należy tu dodać kod do wyświetlania bardziej szczegółowych informacji o zakończeniu procesu
+  }
+
+  // Przycisk "Przerwij przetwarzanie" -> wywołanie API do anulowania
+  cancelProcessing(): void {
+    this.http.post('http://localhost:8080/api/cancel-processing', {})
+      .subscribe({
+        next: () => {
+          this.uploading = false; // Ustawiamy stan na nieaktywny po anulowaniu
+          this.successMessage = 'Przetwarzanie zostało anulowane.';
+        },
+        error: (error) => {
+          this.errorMessage = 'Błąd podczas anulowania przetwarzania.';
+        }
+      });
+  }
 
   onDragOver(event: DragEvent): void {
     event.preventDefault();

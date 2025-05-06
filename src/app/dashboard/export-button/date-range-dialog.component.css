@@ -40,6 +40,7 @@
     gap: 0px; /* Odstęp między polami */
     margin-left: 20px; /* Lewy margines */
     width: 100%; /* Ustawiamy, żeby kontener zajmował 100% dostępnej szerokości */
+    cursor: pointer;
   }
   /* Układ pól daty w jednym rzędzie */
   ::ng-deep .dialog .date-input {
@@ -48,6 +49,7 @@
     gap: 10px;                   /* Przestrzeń między polami */
     margin-bottom: 10px;
     margin-left: 5px;
+    cursor: pointer;
     flex-wrap: nowrap;           /* Zapewnia, że pola będą w jednym rzędzie */
     width: 50%;                 /* Zajmują 100% dostępnej szerokości */
   }
@@ -56,10 +58,12 @@
     font-size: 16px;
     color: #2c3e50;
     margin-bottom: 5px;
+    cursor: pointer;
     font-family: 'Roboto', sans-serif;
   }
   
   ::ng-deep .dialog .date-input input {
+
     width: 65%;                  /* Zmniejszamy szerokość pól do 45% */
     padding: 4px;                /* Zmniejszamy padding, aby były bardziej kompaktowe */
     border: 1px solid #ddd;
@@ -67,6 +71,7 @@
     font-family: 'Roboto', sans-serif;  /* Czcionka pola daty */
     box-sizing: border-box;      /* Zapewnia, że padding nie wpływa na szerokość */
     font-size: 14px;             /* Zmniejszamy czcionkę */
+    cursor: pointer;
   }
   
   /* Stylizacja przycisku "Wygeneruj" */
@@ -120,6 +125,7 @@
   
   /* Komponent kalendarza - poprawa wyglądu */
   ::ng-deep .calendar-container {
+        cursor: pointer;
     background-color: white;
     padding: 15px;
     border-radius: 8px;
@@ -132,6 +138,7 @@
     align-items: center;
     font-size: 16px;
     color: #2c3e50;
+    cursor: pointer;
   }
   
   ::ng-deep .calendar-header button {
@@ -143,6 +150,7 @@
   
   ::ng-deep .calendar-header button mat-icon {
     color: #1abc9c;
+    cursor: pointer;
   }
   
   ::ng-deep .calendar-day {
@@ -160,10 +168,12 @@
   ::ng-deep .calendar-day.today {
     font-weight: bold;
     color: #e74c3c;
+    cursor: pointer;
   }
   
   ::ng-deep .calendar-day:hover {
     background-color: #f0f9f8;
+    cursor: pointer;
   }
   
   /* Responsywność */

@@ -19,11 +19,27 @@
     <p>Wybrany plik: {{ selectedFile.name }}</p>
   </div>
 
-  <button mat-raised-button color="primary" (click)="uploadFile()" [disabled]="!selectedFile || uploading">
-    Wyślij
+  <button mat-raised-button color="primary" (click)="uploadFile()" [disabled]="!selectedFile || uploading" class="send-button">
+    <mat-icon>cloud_upload</mat-icon> Wyślij
   </button>
 
-  <mat-progress-spinner *ngIf="uploading" [value]="uploadProgress" diameter="40"></mat-progress-spinner>
+  <!-- Zblurowany ekran podczas przesyłania -->
+  <div *ngIf="uploading" class="overlay"></div>
+
+  <!-- Widoczny spinner podczas przesyłania -->
+  <div *ngIf="uploading" class="spinner-container">
+    <mat-progress-spinner mode="indeterminate" diameter="60"></mat-progress-spinner>
+  </div>
+
+  <!-- Komunikat informacyjny podczas przetwarzania -->
+  <div *ngIf="uploading" class="processing-message">
+    <p>Proszę czekać. Przetwarzanie może potrwać około 10 minut.</p>
+  </div>
+
+  <!-- Przycisk do przerwania przetwarzania, widoczny tylko, gdy proces jest aktywny -->
+  <button mat-raised-button color="warn" (click)="cancelProcessing()" *ngIf="uploading" class="cancel-button">
+    <mat-icon>cancel</mat-icon> Przerwij przetwarzanie
+  </button>
 
   <!-- Success Message -->
   <div class="success" *ngIf="successMessage">{{ successMessage }}</div>

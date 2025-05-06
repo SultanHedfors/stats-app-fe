@@ -221,3 +221,28 @@ button[mat-icon-button][disabled] {
   will-change: height, opacity;
   display: block;
 }
+/* Komunikat o braku zabiegów */
+.no-procedures-message {
+  display: flex;
+  justify-content: flex-start; /* Wyrównanie zawartości do góry */
+  align-items: center;
+  flex-direction: column;
+  height: 100vh; /* Pełna wysokość ekranu */
+  font-size: 24px;
+  font-weight: 600;
+  color: #7f8c8d; /* Szary kolor */
+  text-align: center;
+  gap: 10px; /* Zmniejszony odstęp między ikoną a tekstem */
+  padding-top: 40px; /* Większy margines u góry, aby całość przesunęła się niżej */
+}
+
+.no-procedures-icon {
+  font-size: 40px; /* Mniejsza ikona */
+  color: #7f8c8d;  /* Szary kolor */
+  margin-bottom: 5px; /* Zmniejszenie marginesu poniżej ikony, aby była bliżej tekstu */
+  width: 100%; /* Pełna szerokość kontenera */
+  height: auto; /* Automatyczna wysokość, aby zachować proporcje */
+}
+
+
+

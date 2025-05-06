@@ -1,28 +1,26 @@
 /* General */
 body {
-  background-color: #e6f2f1; /* Jasny odcień miętowego tła na całym tle */
+  background-color: #e6f2f1;
   font-family: 'Roboto', sans-serif;
 }
 
 .upload-container {
   padding: 30px;
-  background: #ffffff; /* Białe tło dla kontenera */
+  background: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtelny cień */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 780px;  /* Zwiększenie szerokości kontenera */
-  margin: 30px auto; /* Margines wokół kontenera */
+  max-width: 780px;
+  margin: 30px auto;
   position: relative;
-  z-index: 2; /* Kontener w topie */
+  z-index: 2;
 }
 
-/* Delikatne tło poza kontenerem */
 body {
-  background: linear-gradient(135deg, rgba(240, 248, 255, 0.5), rgba(255, 255, 255, 0.9)); /* Gradient w tle */
+  background: linear-gradient(135deg, rgba(240, 248, 255, 0.5), rgba(255, 255, 255, 0.9));
   height: 100vh;
 }
 
-/* Nagłówek */
 .upload-container h2 {
   font-size: 24px;
   font-weight: 600;
@@ -41,12 +39,12 @@ body {
   cursor: pointer;
   border-radius: 8px;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  background-color: rgba(240, 240, 240, 0.8); /* Subtelne tło */
+  background-color: rgba(240, 240, 240, 0.8);
 }
 
 .drop-zone.dragging {
   border-color: #1abc9c;
-  background-color: rgba(240, 249, 248, 1); /* Jasne tło przy przeciąganiu */
+  background-color: rgba(240, 249, 248, 1);
 }
 
 .drop-zone p {
@@ -84,35 +82,88 @@ body {
   display: none;
 }
 
-/* Przyciski */
-button.mat-raised-button {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
+/* Przycisk "Wyślij" */
+.send-button {
+  width: auto;  /* Zmieniamy szerokość na auto, żeby przycisk nie był pełnej szerokości */
+  padding: 18px 36px;  /* Zwiększamy wysokość i szerokość, aby przycisk był grubszy */
+  font-size: 20px;  /* Zwiększenie rozmiaru czcionki */
+  font-weight: 600;  /* Pogrubienie tekstu */
   border-radius: 8px;
   background-color: #1abc9c;
   color: white;
   border: none;
   transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+  display: flex;
+  justify-content: center;  /* Centrowanie zawartości */
+  align-items: center;  /* Centrowanie zawartości */
+  min-width: 200px;  /* Ustawiamy minimalną szerokość, aby nie był zbyt wąski */
+  margin: 20px auto 0;  /* Wyśrodkowanie horyzontalnie i zachowanie dotychczasowego marginesu */
 }
 
-button.mat-raised-button:hover {
+.send-button:hover {
   background-color: #16a085;
   transform: scale(1.05);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-button.mat-raised-button:disabled {
+.send-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-/* Progress spinner */
+/* Ikony przycisków */
+.send-button mat-icon {
+  margin-right: 8px;
+}
+
+/* Zblurowanie tła podczas przetwarzania */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.6);  /* Przyciemnia tło */
+  z-index: 1;
+  backdrop-filter: blur(5px);  /* Efekt rozmycia */
+}
+
+/* Spinner */
+.spinner-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
 mat-progress-spinner {
   display: block;
-  margin: 20px auto;
+}
+
+/* Komunikat podczas przetwarzania */
+.processing-message {
+  position: fixed;
+  top: 60%;  /* Pozycjonowanie poniżej spinnera */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-style: italic;  /* Kursywa */
+  font-size: 14px;  /* Mniejszy rozmiar czcionki */
+  color: #2c3e50;  /* Kolor czcionki pasujący do reszty aplikacji */
+  text-align: center;
+  padding: 20px 0 20px 0;  /* Dodatkowy odstęp od spinnera */
+}
+
+/* Przycisk anulowania */
+.cancel-button {
+  position: fixed;
+  top: 60%;  /* Przyciski będą nieco wyżej */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  margin-top: 20px;
 }
 
 /* Komunikaty sukcesu/błędu */
@@ -134,5 +185,5 @@ mat-progress-spinner {
 }
 
 .error mat-icon {
-  margin-right: 8px; /* Odstęp między ikoną a tekstem */
+  margin-right: 8px;
 }

@@ -78,8 +78,9 @@ export class ProceduresListComponent implements OnInit {
     this.loading = true;
 
     this.procedureService.prefetchMonth(monthKey).subscribe(() => {
-      this.loadMonthData(monthKey);
       this.filterByDate(today);
+      this.loadMonthData(monthKey);
+
     });
   }
 

@@ -6,6 +6,8 @@
   <mat-spinner diameter="40"></mat-spinner>
 </div>
 
+
+
 <div *ngIf="!loading" class="content-wrapper">
   <h2 class="section-header">
     <mat-icon class="header-icon">list_alt</mat-icon>
@@ -143,6 +145,12 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"
       [ngClass]="{ 'highlight-flash': highlightedRows[row.activityId] }"></tr>
   </table>
+
+  <div *ngIf="!loading && procedures.length === 0" class="no-procedures-message">
+
+    <p>Brak zabiegów w tym dniu</p>
+        <mat-icon class="no-procedures-icon">search_off</mat-icon>
+  </div>
 
   <app-procedures-pagination
     [page]="page"

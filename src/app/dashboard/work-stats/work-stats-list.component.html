@@ -147,11 +147,40 @@
   <!-- Pagination for daily stats -->
   <div class="pagination">
     <button mat-button (click)="prevPageRange()" [disabled]="currentPage === 0">«</button>
-    <ng-container *ngFor="let page of [].constructor(totalDailyPages); let i = index">
-      <button mat-button (click)="setPage(i)" [class.active]="i === currentPage">
-        {{ i + 1 }}
-      </button>
+    <ng-container *ngIf="currentTab === 'daily'">
+      <ng-container *ngFor="let page of [].constructor(totalDailyPages); let i = index">
+        <button mat-button (click)="setPage(i)" [class.active]="i === currentPage">
+          {{ i + 1 }}
+        </button>
+      </ng-container>
     </ng-container>
-    <button mat-button (click)="nextPageRange()" [disabled]="currentPage === totalDailyPages - 1">»</button>
+    <ng-container *ngIf="currentTab === 'weekly'">
+      <ng-container *ngFor="let page of [].constructor(totalWeeklyPages); let i = index">
+        <button mat-button (click)="setPage(i)" [class.active]="i === currentPage">
+          {{ i + 1 }}
+        </button>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="currentTab === 'monthly'">
+      <ng-container *ngFor="let page of [].constructor(totalMonthlyPages); let i = index">
+        <button mat-button (click)="setPage(i)" [class.active]="i === currentPage">
+          {{ i + 1 }}
+        </button>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="currentTab === 'yearly'">
+      <ng-container *ngFor="let page of [].constructor(totalYearlyPages); let i = index">
+        <button mat-button (click)="setPage(i)" [class.active]="i === currentPage">
+          {{ i + 1 }}
+        </button>
+      </ng-container>
+    </ng-container>
+    <button mat-button (click)="nextPageRange()"
+            [disabled]="
+              (currentTab === 'daily' && currentPage === totalDailyPages - 1) ||
+              (currentTab === 'weekly' && currentPage === totalWeeklyPages - 1) ||
+              (currentTab === 'monthly' && currentPage === totalMonthlyPages - 1) ||
+              (currentTab === 'yearly' && currentPage === totalYearlyPages - 1)
+            ">»</button>
   </div>
 </div>

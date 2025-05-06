@@ -1,15 +1,15 @@
 <div class="login-container">
   <mat-card class="login-card">
     <form (ngSubmit)="login()">
-      <h2 class="login-title">Employee Login</h2>
+      <h2 class="login-title">Zaloguj się</h2>
 
       <mat-form-field class="full-width" appearance="outline">
-        <mat-label>Username</mat-label>
+        <mat-label>Nazwa użytkownika</mat-label>
         <input matInput [(ngModel)]="username" name="username" placeholder="Enter your username" required>
       </mat-form-field>
 
       <mat-form-field class="full-width" appearance="outline">
-        <mat-label>Password</mat-label>
+        <mat-label>Hasło</mat-label>
         <input matInput type="password" [(ngModel)]="password" name="password" placeholder="Enter your password" required>
       </mat-form-field>
 

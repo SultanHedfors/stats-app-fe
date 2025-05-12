@@ -13,7 +13,20 @@
     <mat-icon class="header-icon">list_alt</mat-icon>
     Lista zabiegów
   </h2>
-
+  <!-- <div class="filter-container">
+    <mat-form-field appearance="outline">
+      <mat-label>Filtruj po nazwie zabiegu</mat-label>
+      <input
+        matInput
+        type="text"
+        placeholder="Wpisz nazwę zabiegu"
+        (input)="onFilterInput($event)"
+      >
+      <button mat-icon-button matSuffix disabled>
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+  </div> -->
   <table mat-table [dataSource]="procedures" class="mat-elevation-z8 custom-table">
     <!-- Activity ID Column -->
     <ng-container matColumnDef="activityId">
@@ -83,9 +96,24 @@
       </td>
     </ng-container>
 
+    
+    
+    
     <!-- Procedure Name Column -->
     <ng-container matColumnDef="procedureName">
-      <th mat-header-cell *matHeaderCellDef>Nazwa zabiegu</th>
+      <th mat-header-cell *matHeaderCellDef>
+        <div class="header-with-filter">
+          <span>Nazwa zabiegu</span>
+          <input
+            type="text"
+            class="plain-header-input"
+            placeholder="Filtruj"
+            (input)="onFilterInput($event)"
+          />
+        </div>
+      </th>
+      
+      
       <td mat-cell *matCellDef="let element">{{ element.procedureName }}</td>
     </ng-container>
 

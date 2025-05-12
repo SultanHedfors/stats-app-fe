@@ -187,3 +187,29 @@ mat-progress-spinner {
 .error mat-icon {
   margin-right: 8px;
 }
+
+
+
+.download-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto 0 auto; /* auto marginesy po bokach centrowane */
+  padding: 6px 12x;
+  font-size: 20px;
+  font-weight: 600;
+
+  color: white;
+  min-width: 40px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.download-button mat-icon {
+  margin-right: 8px;
+}
+
+.download-button:hover {
+
+  transform: scale(1.05);
+}

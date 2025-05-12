@@ -12,6 +12,8 @@ import { ClickOutsideDirective } from '../calendar/click-outside.directive';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { Observable, forkJoin } from 'rxjs';
 import { ProceduresPaginationComponent } from './procedures-pagination.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-procedures-list',
@@ -24,6 +26,8 @@ import { ProceduresPaginationComponent } from './procedures-pagination.component
     MatTooltipModule,
     MatProgressSpinnerModule,
     MiniCalendarComponent,
+    MatFormFieldModule, 
+    MatInputModule,  
     ClickOutsideDirective,
     ProceduresPaginationComponent
   ],
@@ -53,6 +57,7 @@ export class ProceduresListComponent implements OnInit {
   size = 30;
   totalPages = 0;
   visiblePageWindow = 5;
+  filterValue: string = '';
 
   isDateFilterActive = false;
 
@@ -87,6 +92,11 @@ export class ProceduresListComponent implements OnInit {
   getMonthKey(date: Date): string {
     return this.procedureService.getMonthKey(date);
   }
+  onFilterInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.applyFilter(value);
+  }
+  
 
   loadMonthData(monthKey: string): void {
     this.globalLoading = true;
@@ -275,6 +285,10 @@ export class ProceduresListComponent implements OnInit {
   }
 
   updateDisplayedProcedures(): void {
+    if (this.filterValue) {
+      this.filterProcedures();
+      return;
+    }
     if (this.isDateFilterActive && this.selectedDate) {
       this.globalLoading = true;
 
@@ -330,5 +344,25 @@ export class ProceduresListComponent implements OnInit {
   goToPage(pageNumber: number): void {
     this.page = pageNumber;
     this.updateDisplayedProcedures();
+  }
+
+  applyFilter(value: string): void {
+    this.filterValue = value.trim().toLowerCase();
+    this.filterProcedures();
+  }
+  
+  private filterProcedures(): void {
+    if (this.filterValue === '') {
+      this.updateDisplayedProcedures();
+      return;
+    }
+  
+    const filtered = this.allProcedures.filter(p =>
+      p.procedureName?.toLowerCase().includes(this.filterValue)
+    );
+  
+    this.procedures = filtered.slice(0, this.size);
+    this.totalPages = Math.ceil(filtered.length / this.size);
+    this.page = 0;
   }
 }

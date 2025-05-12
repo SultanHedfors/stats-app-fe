@@ -19,9 +19,20 @@
     <p>Wybrany plik: {{ selectedFile.name }}</p>
   </div>
 
-  <button mat-raised-button color="primary" (click)="uploadFile()" [disabled]="!selectedFile || uploading" class="send-button">
-    <mat-icon>cloud_upload</mat-icon> Wyślij
+    <button mat-raised-button color="primary" (click)="uploadFile()" [disabled]="!selectedFile || uploading" class="send-button">
+      <mat-icon>cloud_upload</mat-icon> Wyślij
+    </button>
+  
+    <button
+    mat-raised-button
+    color="accent"
+    (click)="downloadLatestReport()"
+    *ngIf="showDownloadButton"
+    class="download-button">
+    <mat-icon>download</mat-icon> Pobierz raport
   </button>
+  
+
 
   <!-- Zblurowany ekran podczas przesyłania -->
   <div *ngIf="uploading" class="overlay"></div>

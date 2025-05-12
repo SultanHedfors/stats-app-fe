@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { DateRangeDialogComponent } from './date-range-dialog.component';
+import { environment } from '../../../envinronments/environment';
 
 
 @Component({
@@ -33,7 +34,7 @@ export class ExportButtonComponent {
 
   generateFile(from: string, to: string): void {
     this.isLoading = true;
-    this.http.get(`http://localhost:8080/api/stats-export/xlsx?from=${from}&to=${to}`, { responseType: 'blob' })
+    this.http.get(`${environment.apiUrl}/api/stats-export/xlsx?from=${from}&to=${to}`, { responseType: 'blob' })
       .subscribe(
         (response: Blob) => {
           const a = document.createElement('a');

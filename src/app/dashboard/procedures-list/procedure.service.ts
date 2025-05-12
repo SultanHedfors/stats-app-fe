@@ -3,12 +3,14 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, forkJoin } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { Procedure, ProcedureResponse } from './procedure.model';
+import { environment } from '../../../envinronments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ProcedureService {
   private cache = new Map<string, Procedure[]>(); // key = "YYYY-MM"
   private currentMonthKey: string | null = null;
-  private readonly baseUrl = 'http://localhost:8080/api/procedures';
+  private readonly baseUrl = `${environment.apiUrl}/api/procedures`; 
+
 
   constructor(private http: HttpClient) {}
 

@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { environment } from '../../../envinronments/environment';
 
 @Component({
   selector: 'app-upload-schedule',
@@ -22,6 +23,8 @@ export class UploadScheduleComponent {
   isDragging = false; // Dodajemy zmienną do śledzenia stanu przeciągania pliku
   globalLoading = false; // Dodajemy zmienną do zarządzania stanem globalnego ładowania
   isLoading = false; // Dodajemy zmienną do zarządzania stanem lokalnego ładowania
+  private readonly baseUrl = `${environment.apiUrl}/api/`;
+  showDownloadButton = false; // Pokazuje przycisk pobierania
 
   constructor(private http: HttpClient) {}
 
@@ -65,7 +68,7 @@ export class UploadScheduleComponent {
     this.isLoading = true;
     this.globalLoading = true;
 
-    this.http.post('http://localhost:8080/api/upload-schedule', formData, {
+    this.http.post(this.baseUrl + 'upload-schedule', formData, {
       reportProgress: true,
       observe: 'events',
       responseType: 'json'
@@ -76,6 +79,7 @@ export class UploadScheduleComponent {
           this.uploadProgress = Math.round((100 * event.loaded) / event.total);
         } else if (event.type === 4) {
           this.successMessage = 'Plik został pomyślnie przesłany!';
+          this.showDownloadButton = true;
           this.selectedFile = null;
           this.uploadProgress = 100;
         }
@@ -85,11 +89,13 @@ export class UploadScheduleComponent {
         this.errorMessage = `${errorMessage}`;
         this.uploading = false;
         this.globalLoading = false;
+        this.showDownloadButton = true;
       },
       complete: () => {
         this.isLoading = false;
         this.globalLoading = false;
         this.backendProcessComplete(); // Dodatkowe zakończenie procesu
+        this.showDownloadButton = true;
       }
     });
   }
@@ -104,7 +110,7 @@ export class UploadScheduleComponent {
 
   // Przycisk "Przerwij przetwarzanie" -> wywołanie API do anulowania
   cancelProcessing(): void {
-    this.http.post('http://localhost:8080/api/cancel-processing', {})
+    this.http.post( this.baseUrl +'api/cancel-processing', {})
       .subscribe({
         next: () => {
           this.uploading = false; // Ustawiamy stan na nieaktywny po anulowaniu
@@ -132,5 +138,30 @@ export class UploadScheduleComponent {
     if (event.dataTransfer?.files.length) {
       this.onFileDropped(event.dataTransfer.files[0]);
     }
+  }
+  downloadLatestReport(): void {
+    this.http.get(this.baseUrl + 'download-latest-report', {
+      responseType: 'blob',
+      observe: 'response'
+    }).subscribe({
+      next: (response) => {
+        const blob = new Blob([response.body!], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const contentDisposition = response.headers.get('Content-Disposition');
+        const filenameMatch = contentDisposition?.match(/filename="(.+)"/);
+        const filename = filenameMatch ? filenameMatch[1] : 'raport.txt';
+  
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        this.errorMessage = 'Nie udało się pobrać raportu.';
+      }
+    });
   }
 }

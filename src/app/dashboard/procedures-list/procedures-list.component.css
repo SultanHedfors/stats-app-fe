@@ -245,4 +245,26 @@ button[mat-icon-button][disabled] {
 }
 
 
+.header-with-filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.plain-header-input {
+  padding: 2px 6px;
+  font-size: 12px;
+  height: 22px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+}
+
+
+
+
+
+
+
+
 

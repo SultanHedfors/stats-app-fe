@@ -1,4 +1,4 @@
-<nav class="navbar">
+<nav *ngIf="!isLoginPage()" class="navbar"  >
   <ul>
     <li *ngIf="isLoggedIn()">
       <a

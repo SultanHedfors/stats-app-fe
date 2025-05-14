@@ -26,4 +26,10 @@ export class NavbarComponent {
   logout() {
     this.authService.logout();
   }
+
+    // Now check if the current route is the login page
+    isLoginPage(): boolean {
+      console.log('url'+this.router.url)
+      return this.router.url === '/';  // Match the URL of the login page
+    }
 }

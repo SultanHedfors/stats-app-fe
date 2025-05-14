@@ -31,6 +31,7 @@
     <thead>
       <tr>
         <th>Pracownik</th>
+        <th>Kod pracownika</th>
         <!-- Dynamically add columns based on the selected tab -->
         <ng-container *ngIf="currentTab === 'daily'">
           <th *ngFor="let day of dailyDates">{{ day }}</th>
@@ -48,6 +49,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let stat of statistics" [ngClass]="{'highlight': stat.currentUser}">
+        <td>{{ stat.employeeName }}</td>
         <td>{{ stat.employeeCode }}</td>
 
         <!-- Dzienna statystyka -->
@@ -81,6 +83,7 @@
         <!-- Wiersz: Średnia dzienna -->
         <tr *ngIf="currentTab === 'daily'" class="summary-row">
           <td>Średnia dzienna</td>
+          <td></td>
           <td *ngFor="let day of dailyDates">
             {{ calculateDailyAverage(day) }} %
           </td>
@@ -89,6 +92,7 @@
         <!-- Wiersz: Średnia dla bieżącego okresu -->
         <tr *ngIf="currentTab === 'daily'" class="summary-row">
           <td>Średnia dla bieżącego okresu</td>
+          <td></td>
           <!-- Użycie colspan dynamicznie związanego z liczbą dni -->
           <td [attr.colspan]="dailyDates.length">
             {{ calculateOverallAverage('daily') }} %
@@ -96,12 +100,14 @@
         </tr>
         <tr *ngIf="currentTab === 'weekly'" class="summary-row">
           <td>Średnia tygodniowa</td>
+          <td></td>
           <td *ngFor="let week of weeklyDates">
             {{ calculateWeeklyAverage(week) }} %
           </td>
         </tr>
         <tr *ngIf="currentTab === 'weekly'" class="summary-row">
           <td>Średnia dla bieżącego okresu</td>
+          <td></td>
           <td [attr.colspan]="weeklyDates.length">
             {{ calculateOverallAverage('weekly') }} %
           </td>
@@ -110,12 +116,14 @@
         <!-- Wiersz: Średnia miesięczna -->
         <tr *ngIf="currentTab === 'monthly'" class="summary-row">
           <td>Średnia miesięczna</td>
+          <td></td>
           <td *ngFor="let month of monthlyDates">
             {{ calculateMonthlyAverage(month) }} %
           </td>
         </tr>
         <tr *ngIf="currentTab === 'monthly'" class="summary-row">
           <td>Średnia dla bieżącego okresu</td>
+          <td></td>
           <td [attr.colspan]="monthlyDates.length">
             {{ calculateOverallAverage('monthly') }} %
           </td>
@@ -124,6 +132,7 @@
         <!-- Wiersz: Średnia roczna -->
         <tr *ngIf="currentTab === 'yearly'" class="summary-row">
           <td>Średnia roczna</td>
+          <td></td>
           <td *ngFor="let year of yearlyDates">
             {{ calculateYearlyAverage(year.toString()) }} %
           </td>
@@ -131,6 +140,7 @@
         
         <tr *ngIf="currentTab === 'yearly'" class="summary-row">
           <td>Średnia dla bieżącego okresu</td>
+          <td></td>
           <td [attr.colspan]="yearlyDates.length">
             {{ calculateOverallAverage('yearly') }} %
           </td>

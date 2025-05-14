@@ -34,6 +34,7 @@ interface YearlyStat {
 
 interface StatisticsDto {
   employeeCode: string;
+  employeeName: string;
   dailyStats: DailyStat[];
   weeklyStats: WeeklyStat[];
   monthlyStats: MonthlyStat[];

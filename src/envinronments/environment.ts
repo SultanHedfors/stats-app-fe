@@ -1,8 +1,16 @@
+// export const environment = {
+//   production: true,
+//   apiUrl: 'http://localhost:8080',
+//   frontendUrl: 'http://localhost:4200'
+// };
+
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8080',
-  frontendUrl: 'http://localhost:4200'
+  apiUrl: 'http://localhost:8080'
+  ,
+  frontendUrl: 'http://stats-app:80'
 };
+
 
 // export const environment = {
 //   production: false,

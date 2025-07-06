@@ -26,8 +26,8 @@ import { MatInputModule } from '@angular/material/input';
     MatTooltipModule,
     MatProgressSpinnerModule,
     MiniCalendarComponent,
-    MatFormFieldModule, 
-    MatInputModule,  
+    MatFormFieldModule,
+    MatInputModule,
     ClickOutsideDirective,
     ProceduresPaginationComponent
   ],
@@ -96,7 +96,7 @@ export class ProceduresListComponent implements OnInit {
     const value = (event.target as HTMLInputElement).value;
     this.applyFilter(value);
   }
-  
+
 
   loadMonthData(monthKey: string): void {
     this.globalLoading = true;
@@ -114,7 +114,7 @@ export class ProceduresListComponent implements OnInit {
 
   onDateSelected(date: Date): void {
     this.selectedDate = date;
-    const newMonthKey = this.getMonthKey(date);
+    this.getMonthKey(date);
     this.calendarOpenFor = null;
     this.isDateFilterActive = true;
     this.page = 0;
@@ -350,17 +350,17 @@ export class ProceduresListComponent implements OnInit {
     this.filterValue = value.trim().toLowerCase();
     this.filterProcedures();
   }
-  
+
   private filterProcedures(): void {
     if (this.filterValue === '') {
       this.updateDisplayedProcedures();
       return;
     }
-  
+
     const filtered = this.allProcedures.filter(p =>
       p.procedureName?.toLowerCase().includes(this.filterValue)
     );
-  
+
     this.procedures = filtered.slice(0, this.size);
     this.totalPages = Math.ceil(filtered.length / this.size);
     this.page = 0;
